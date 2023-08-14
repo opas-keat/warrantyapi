@@ -1,12 +1,14 @@
 package configuration
 
 import (
+	"fmt"
 	"log"
 	"math/rand"
 	"os"
 	"strconv"
 	"time"
 
+	"warrantyapi/entity"
 	"warrantyapi/exception"
 
 	"gorm.io/driver/postgres"
@@ -49,16 +51,15 @@ func NewDatabase(config Config) *gorm.DB {
 	// exception.PanicLogging(err)
 	// db.LogMode(true)
 
-	sqlDB, err := db.DB()
+	sqlDB, _ := db.DB()
 	exception.PanicLogging(err)
 	sqlDB.SetMaxOpenConns(maxPoolOpen)
 	sqlDB.SetMaxIdleConns(maxPoolIdle)
 	sqlDB.SetConnMaxLifetime(time.Duration(rand.Int31n(int32(maxPollLifeTime))) * time.Millisecond)
-	// err = db.AutoMigrate(&entity.Budget{})
-	// if err != nil {
-	// 	fmt.Println("failed to automigrate Budget entity:", err.Error())
-	// 	return db
-	// }
-
+	err = db.AutoMigrate(&entity.Dealer{})
+	if err != nil {
+		fmt.Println("failed to automigrate Dealer entity:", err.Error())
+		return db
+	}
 	return db
 }
