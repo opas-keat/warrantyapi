@@ -8,6 +8,10 @@ require (
 )
 
 require (
+	github.com/MicahParks/keyfunc/v2 v2.1.0 // indirect
+	github.com/go-playground/locales v0.14.1 // indirect
+	github.com/go-playground/universal-translator v0.18.1 // indirect
+	github.com/leodido/go-urn v1.2.4 // indirect
 	github.com/philhofer/fwd v1.1.2 // indirect
 	github.com/tinylib/msgp v1.1.8 // indirect
 )
@@ -37,7 +41,10 @@ require (
 require (
 	github.com/chenzhuoyu/base64x v0.0.0-20230717121745-296ad89f973d // indirect
 	github.com/chenzhuoyu/iasm v0.9.0 // indirect
+	github.com/go-playground/validator v9.31.0+incompatible
+	github.com/gofiber/contrib/jwt v1.0.4
 	github.com/gofiber/fiber/v2 v2.48.0
+	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/klauspost/cpuid/v2 v2.2.5 // indirect
 	github.com/rs/zerolog v1.30.0
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
