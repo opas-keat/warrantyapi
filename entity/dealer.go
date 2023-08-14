@@ -13,6 +13,7 @@ type Dealer struct {
 	DealerAddress string `gorm:"column:dealer_address;size:1000"`
 	DealerPhone   string `gorm:"column:dealer_phone;size:255"`
 	DealerTax     string `gorm:"column:dealer_tax;size:20"`
+	// DealerRegion string `gorm:"column:dealer_tax;size:20"`
 }
 
 func (Dealer) TableName() string {
