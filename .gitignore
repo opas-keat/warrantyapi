@@ -21,3 +21,4 @@
 /temp
 /uploads
 /target
+.env
