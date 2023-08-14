@@ -1,8 +1,15 @@
 package main
 
 import (
+	"crypto/rand"
+	"os"
+	"os/signal"
 	"time"
 	"warrantyapi/configuration"
+	"warrantyapi/controller"
+	"warrantyapi/exception"
+	repository "warrantyapi/repository/impl"
+	service "warrantyapi/service/impl"
 
 	"github.com/rs/zerolog"
 
@@ -21,7 +28,7 @@ import (
 func main() {
 	//setup configuration
 	config := configuration.New()
-	// database := configuration.NewDatabase(config)
+	database := configuration.NewDatabase(config)
 	configuration.NewDatabase(config)
 	zerolog.TimeFieldFormat = time.RFC3339
 	//setup fiber
@@ -55,11 +62,36 @@ func main() {
 	app.Use(requestid.New())
 
 	//setup repository
+	logRepository := repository.NewLogRepositoryImpl(database)
+	dealerRepository := repository.NewDealerRepositoryImpl(database)
 
 	//setup service
+	dealerService := service.NewDealerServiceImpl(&dealerRepository, &logRepository)
 
 	//setup controller
+	dealerController := controller.NewDealerController(&dealerService, config)
 
 	//setup routing
+	app.Get("/", controller.Hello)
+	app.Get("/healthz", controller.Hello)
+	dealerController.Route(app)
+	app.All("*", controller.NotFound)
+
+	bytes := make([]byte, 32) //generate a random 32 byte key for AES-256
+	if _, err := rand.Read(bytes); err != nil {
+		panic(err.Error())
+	}
+
+	// Close any connections on interrupt signal
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	go func() {
+		<-c
+		_ = app.Shutdown()
+	}()
+
+	//start app
+	err := app.Listen(config.Get("SERVER.PORT"))
+	exception.PanicLogging(err)
 
 }

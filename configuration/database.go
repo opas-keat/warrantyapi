@@ -61,5 +61,10 @@ func NewDatabase(config Config) *gorm.DB {
 		fmt.Println("failed to automigrate Dealer entity:", err.Error())
 		return db
 	}
+	err = db.AutoMigrate(&entity.Log{})
+	if err != nil {
+		fmt.Println("failed to automigrate Log entity:", err.Error())
+		return db
+	}
 	return db
 }
