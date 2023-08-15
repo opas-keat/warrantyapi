@@ -1,12 +1,13 @@
 package entity
 
 import (
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type Dealer struct {
 	gorm.Model    `json:"-"`
-	ID            uint   `gorm:"column:id; not null"`
+	ID            uuid.UUID `gorm:"type:uuid;default:gen_random_uuid()"`
 	CreatedBy     string `gorm:"column:created_by; not null"`
 	DealerCode    string `gorm:"column:dealer_code;size:50"`
 	DealerName    string `gorm:"column:dealer_name;size:255"`

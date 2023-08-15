@@ -2,7 +2,6 @@ package impl
 
 import (
 	"context"
-	"strconv"
 	"warrantyapi/entity"
 	"warrantyapi/model"
 	"warrantyapi/repository"
@@ -35,10 +34,11 @@ func (service *dealerServiceImpl) Create(ctx context.Context, dealerInput model.
 	service.LogRepository.Insert(ctx, entity.Log{
 		CreatedBy: createdBy,
 		Module:    "dealer",
-		Detail:    "สร้าง : dealer รหัส  " + strconv.FormatUint(uint64(dealer.ID), 10) + " ชื่อ " + dealer.DealerName,
+		// Detail: dealer.ID.String(),
+		Detail: "สร้าง : dealer รหัส  " + dealer.ID.String() + " ชื่อ " + dealer.DealerName,
 	})
 	return model.DealerResponse{
-		ID:            dealer.ID,
+		ID:            dealer.ID.String(),
 		DealerCode:    dealer.DealerCode,
 		DealerName:    dealer.DealerName,
 		DealerAddress: dealer.DealerAddress,
