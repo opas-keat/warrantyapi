@@ -23,7 +23,6 @@ func (controller DealerController) Route(app *fiber.App) {
 	api.Post("/", controller.create)
 	// station.Post("/", middleware.AuthenticateJWT("ROLE_USER"), controller.CreateDealer)
 	api.Get("/", controller.list)
-	// station.Get("/:id", controller.FindById)
 }
 
 func (controller DealerController) create(c *fiber.Ctx) error {
