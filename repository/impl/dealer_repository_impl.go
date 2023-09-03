@@ -18,9 +18,20 @@ type dealerRepositoryImpl struct {
 }
 
 // Insert implements repository.DealerRepository
-func (repository *dealerRepositoryImpl) Insert(ctx context.Context, dealers entity.Dealer) entity.Dealer {
+func (repository *dealerRepositoryImpl) Insert(ctx context.Context, dealers []entity.Dealer) []entity.Dealer {
 	err := repository.DB.WithContext(ctx).Create(&dealers).Error
 	exception.PanicLogging(err)
-	print(dealers.DealerName)
 	return dealers
+}
+
+// List implements repository.DealerRepository
+func (repository *dealerRepositoryImpl) List(ctx context.Context, offset int, limit int, order string, search entity.Dealer) []entity.Dealer {
+	var result []entity.Dealer
+	repository.DB.WithContext(ctx).Debug().
+		Offset(offset).
+		Limit(limit).
+		Order(order).
+		Where(search).
+		Find(&result)
+	return result
 }

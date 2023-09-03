@@ -20,29 +20,63 @@ type dealerServiceImpl struct {
 	repository.LogRepository
 }
 
-// Create implements service.Create
-func (service *dealerServiceImpl) Create(ctx context.Context, dealerInput model.DealerRequest, createdBy string) model.DealerResponse {
-	dealer := entity.Dealer{
-		CreatedBy:     createdBy,
-		DealerCode:    dealerInput.DealerCode,
-		DealerName:    dealerInput.DealerName,
-		DealerAddress: dealerInput.DealerAddress,
-		DealerPhone:   dealerInput.DealerPhone,
-		DealerTax:     dealerInput.DealerTax,
+// Create implements service.DealerService
+func (service *dealerServiceImpl) Create(ctx context.Context, dealerInput []model.DealerRequest, createdBy string) []model.DealerResponse {
+	var dealers []entity.Dealer
+	for _, incident := range dealerInput {
+		dealers = append(dealers, entity.Dealer{
+			CreatedBy:     createdBy,
+			DealerCode:    incident.DealerCode,
+			DealerName:    incident.DealerName,
+			DealerAddress: incident.DealerAddress,
+			DealerPhone:   incident.DealerPhone,
+			DealerTax:     incident.DealerTax,
+			DealerArea:    incident.DealerArea,
+		})
 	}
-	dealer = service.DealerRepository.Insert(ctx, dealer)
-	service.LogRepository.Insert(ctx, entity.Log{
-		CreatedBy: createdBy,
-		Module:    "dealer",
-		// Detail: dealer.ID.String(),
-		Detail: "สร้าง : dealer รหัส  " + dealer.ID.String() + " ชื่อ " + dealer.DealerName,
-	})
-	return model.DealerResponse{
-		ID:            dealer.ID.String(),
-		DealerCode:    dealer.DealerCode,
-		DealerName:    dealer.DealerName,
-		DealerAddress: dealer.DealerAddress,
-		DealerPhone:   dealer.DealerPhone,
-		DealerTax:     dealer.DealerTax,
+	service.DealerRepository.Insert(ctx, dealers)
+	var responses []model.DealerResponse
+	for _, rs := range dealers {
+		service.LogRepository.Insert(ctx, entity.Log{
+			CreatedBy: createdBy,
+			Module:    "dealer",
+			Detail:    "สร้าง : ร้านค้า รหัส  " + rs.ID.String() + " " + rs.DealerCode,
+		})
+
+		responses = append(responses, model.DealerResponse{
+			ID:            rs.ID.String(),
+			DealerCode:    rs.DealerCode,
+			DealerName:    rs.DealerName,
+			DealerAddress: rs.DealerAddress,
+			DealerPhone:   rs.DealerPhone,
+			DealerTax:     rs.DealerTax,
+			DealerArea:    rs.DealerArea,
+		})
 	}
+	return responses
+}
+
+// List implements service.DealerService
+func (service *dealerServiceImpl) List(ctx context.Context, offset int, limit int, order string, searchRequest model.DealerRequest) (responses []model.DealerResponse) {
+
+	searchEntity := entity.Dealer{
+		DealerCode: searchRequest.DealerCode,
+	}
+	results := service.DealerRepository.List(ctx, offset, limit, order, searchEntity)
+	if len(results) == 0 {
+		return []model.DealerResponse{}
+	}
+
+	for _, rs := range results {
+		responses = append(responses, model.DealerResponse{
+			ID:            rs.ID.String(),
+			DealerCode:    rs.DealerCode,
+			DealerName:    rs.DealerName,
+			DealerAddress: rs.DealerAddress,
+			DealerPhone:   rs.DealerPhone,
+			DealerTax:     rs.DealerTax,
+			DealerArea:    rs.DealerArea,
+		})
+	}
+	return responses
 }

@@ -6,6 +6,7 @@ type DealerRequest struct {
 	DealerAddress string `json:"dealer_address"`
 	DealerPhone   string `json:"dealer_phone"`
 	DealerTax     string `json:"dealer_tax"`
+	DealerArea    int    `json:"dealer_area"`
 }
 
 type DealerResponse struct {
@@ -15,4 +16,5 @@ type DealerResponse struct {
 	DealerAddress string `json:"dealer_address"`
 	DealerPhone   string `json:"dealer_phone"`
 	DealerTax     string `json:"dealer_tax"`
+	DealerArea    int    `json:"dealer_area"`
 }
