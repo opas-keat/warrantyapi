@@ -1,4 +1,4 @@
-name: Gh-Pages
+name: Push-To-DockerHub
 
 on:
   push:
