@@ -91,7 +91,7 @@ func main() {
 	}()
 
 	//start app
-	err := app.Listen(config.Get("SERVER.PORT"))
+	err := app.Listen(config.Get("SERVER.HOST") + ":" + config.Get("SERVER.PORT"))
 	exception.PanicLogging(err)
 
 }
