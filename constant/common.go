@@ -1,6 +1,11 @@
 package constant
 
 const (
+	ModuleDealer   = "dealer"
+	ModuleWarranty = "warranty"
+)
+
+const (
 	STATUS_CODE_OK            = "000"
 	STATUS_CODE_BAD_REQUEST   = "400"
 	STATUS_CODE_UN_AUTHORIZED = "401"
@@ -17,4 +22,8 @@ const (
 	MESSAGE_SUCCESS       = "SUCCESS"
 	MESSAGE_BAD_REQUEST   = "BAD REQUEST"
 	MESSAGE_UN_AUTHORIZED = "UNAUTHORIZED"
+)
+
+const (
+	FORMAT_DATE = "02/01/2006"
 )
