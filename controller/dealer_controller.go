@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 
 	"warrantyapi/configuration"
 	"warrantyapi/model"
@@ -23,6 +24,7 @@ func (controller DealerController) Route(app *fiber.App) {
 	api.Post("/", controller.create)
 	// station.Post("/", middleware.AuthenticateJWT("ROLE_USER"), controller.CreateDealer)
 	api.Get("/", controller.list)
+	// api.Get("/:id", controller.findById)
 }
 
 func (controller DealerController) create(c *fiber.Ctx) error {
@@ -52,19 +54,41 @@ func (controller DealerController) list(c *fiber.Ctx) error {
 		return err
 	}
 	dealerCode := c.Query("dealer_code")
+	dealerId := c.Query("dealer_id")
+	println("dealerCode: " + dealerCode)
+	println("dealerId: " + dealerId)
 	println(p.Offset)
 	println(p.Limit)
 	println(p.Order)
 	if p.Limit > 50 {
 		p.Limit = 50
 	}
+	id, _ := uuid.Parse(dealerId)
+	var result []model.DealerResponse
+	println("id: " + id.String())
 	dealerSearch := model.DealerRequest{
+		ID:         id.String(),
 		DealerCode: dealerCode,
 	}
-	result := controller.DealerService.List(c.Context(), p.Offset, p.Limit, p.Order, dealerSearch)
+	if dealerCode != "" || id.String() != "00000000-0000-0000-0000-000000000000" {
+		result = controller.DealerService.List(c.Context(), p.Offset, p.Limit, p.Order, dealerSearch)
+	} else {
+		result = []model.DealerResponse{}
+	}
 	return c.Status(fiber.StatusOK).JSON(model.GeneralResponse{
 		Code:    "000",
 		Message: "Success",
 		Data:    result,
 	})
 }
+
+// func (controller DealerController) findById(c *fiber.Ctx) error {
+// 	id := c.Query("id")
+// 	println(id)
+// 	result := controller.DealerService.FindById(c.Context(), id)
+// 	return c.Status(fiber.StatusOK).JSON(model.GeneralResponse{
+// 		Code:    "000",
+// 		Message: "Success",
+// 		Data:    result,
+// 	})
+// }

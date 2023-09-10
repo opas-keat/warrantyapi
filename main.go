@@ -64,22 +64,28 @@ func main() {
 	//setup repository
 	logRepository := repository.NewLogRepositoryImpl(database)
 	dealerRepository := repository.NewDealerRepositoryImpl(database)
+	productRepository := repository.NewProductRepositoryImpl(database)
 	warrantyRepository := repository.NewWarrantyRepositoryImpl(database)
 
 	//setup service
 	dealerService := service.NewDealerServiceImpl(&dealerRepository, &logRepository)
-	warrantyService := service.NewWarrantyServiceImpl(&warrantyRepository, &logRepository)
+	productService := service.NewProductServiceImpl(&productRepository, &logRepository)
+	warrantyService := service.NewWarrantyServiceImpl(&warrantyRepository, &productRepository, &logRepository)
 
 	//setup controller
 	dealerController := controller.NewDealerController(&dealerService, config)
+	productController := controller.NewProductController(&productService, config)
 	warrantyController := controller.NewWarrantyController(&warrantyService, config)
+	fileController := controller.NewFileController(config)
 
 	//setup routing
 	app.Get("/", controller.Hello)
 	app.Get("/healthz", controller.Hello)
 
 	dealerController.Route(app)
+	productController.Route(app)
 	warrantyController.Route(app)
+	fileController.Route(app)
 	app.All("*", controller.NotFound)
 
 	bytes := make([]byte, 32) //generate a random 32 byte key for AES-256

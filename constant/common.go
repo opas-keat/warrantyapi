@@ -2,6 +2,7 @@ package constant
 
 const (
 	ModuleDealer   = "dealer"
+	ModuleProduct  = "product"
 	ModuleWarranty = "warranty"
 )
 
@@ -25,5 +26,6 @@ const (
 )
 
 const (
-	FORMAT_DATE = "02/01/2006"
+	FORMAT_DATE      = "02/01/2006"
+	FORMAT_DATE_TIME = "02/01/2006 15:04:05"
 )

@@ -1,7 +1,7 @@
 package model
 
 type ProductRequest struct {
-	ID            int    `json:"id"`
+	ID            string `json:"id"`
 	ProductType   string `json:"product_type"`
 	ProductBrand  string `json:"product_brand"`
 	ProductAmount int    `json:"product_amount"`
@@ -9,7 +9,7 @@ type ProductRequest struct {
 }
 
 type ProductResponse struct {
-	ID            int    `json:"id"`
+	ID            string `json:"id"`
 	ProductType   string `json:"product_type"`
 	ProductBrand  string `json:"product_brand"`
 	ProductAmount int    `json:"product_amount"`

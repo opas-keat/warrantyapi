@@ -6,6 +6,8 @@ import (
 	"warrantyapi/model"
 	"warrantyapi/repository"
 	"warrantyapi/service"
+
+	"github.com/google/uuid"
 )
 
 func NewDealerServiceImpl(dealerRepository *repository.DealerRepository, logRepository *repository.LogRepository) service.DealerService {
@@ -56,10 +58,26 @@ func (service *dealerServiceImpl) Create(ctx context.Context, dealerInput []mode
 	return responses
 }
 
+// FindById implements service.DealerService
+func (service *dealerServiceImpl) FindById(ctx context.Context, id string) (responses []model.DealerResponse) {
+	rs := service.DealerRepository.GetById(ctx, id)
+	responses = append(responses, model.DealerResponse{
+		ID:            rs.ID.String(),
+		DealerCode:    rs.DealerCode,
+		DealerName:    rs.DealerName,
+		DealerAddress: rs.DealerAddress,
+		DealerPhone:   rs.DealerPhone,
+		DealerTax:     rs.DealerTax,
+		DealerArea:    rs.DealerArea,
+	})
+	return responses
+}
+
 // List implements service.DealerService
 func (service *dealerServiceImpl) List(ctx context.Context, offset int, limit int, order string, searchRequest model.DealerRequest) (responses []model.DealerResponse) {
-
+	id, _ := uuid.Parse(searchRequest.ID)
 	searchEntity := entity.Dealer{
+		ID:         id,
 		DealerCode: searchRequest.DealerCode,
 	}
 	results := service.DealerRepository.List(ctx, offset, limit, order, searchEntity)

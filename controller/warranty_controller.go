@@ -46,12 +46,12 @@ func (controller WarrantyController) create(c *fiber.Ctx) error {
 		println(product.ProductBrand)
 	}
 	// userName := middleware.GetUserNameFromToken(c)
-	// userName := ""
-	// result := controller.WarrantyService.Create(c.Context(), warrantysInput.Warrantys, userName)
+	userName := ""
+	result := controller.WarrantyService.Create(c.Context(), warrantysInput.Warranty, userName)
 	return c.Status(fiber.StatusOK).JSON(model.GeneralResponse{
 		Code:    "000",
 		Message: "Success",
-		Data:    model.WarrantyResponse{ProductResponse: []model.ProductResponse{}},
+		Data:    result,
 	})
 }
 
@@ -68,6 +68,17 @@ func (controller WarrantyController) update(c *fiber.Ctx) error {
 	}
 	userName := middleware.GetUserNameFromToken(c)
 	result := controller.WarrantyService.Update(c.Context(), warrantysInput.Warrantys, userName)
+	// for _, rs := range result {
+	// 	println(rs.WarrantyNo)
+	// 	println(rs.ID)
+	// 	path := common.CreatePathFileForUpload(rs.WarrantyNo, rs.ID)
+	// 	file, err := c.FormFile("file")
+	// 	if err != nil {
+	// 		println(err)
+	// 	}
+	// 	println(file.Filename)
+	// 	c.SaveFile(file, fmt.Sprintf(path+"%s", rs.ID+"_1.png"))
+	// }
 	return c.Status(fiber.StatusOK).JSON(model.GeneralResponse{
 		Code:    "000",
 		Message: "Success",
@@ -97,14 +108,20 @@ func (controller WarrantyController) list(c *fiber.Ctx) error {
 	// warrantyAgency := c.Query("warranty_agency")
 	// warrantyAffiliate := c.Query("warranty_affiliate")
 	// warrantyTelePhone := c.Query("warranty_telephone")
-	// province := c.Query("province")
+	customerPhone := c.Query("customer_phone")
+	CustomerLicensePlate := c.Query("customer_license_plate")
+	CustomerEmail := c.Query("customer_email")
 	println(p.Offset)
 	println(p.Limit)
 	println(p.Order)
 	if p.Limit > 50 {
 		p.Limit = 50
 	}
-	warrantyInput := model.WarrantyRequest{}
+	warrantyInput := model.WarrantyRequest{
+		CustomerPhone:        customerPhone,
+		CustomerLicensePlate: CustomerLicensePlate,
+		CustomerEmail:        CustomerEmail,
+	}
 	result := controller.WarrantyService.List(c.Context(), p.Offset, p.Limit, p.Order, warrantyInput)
 	return c.Status(fiber.StatusOK).JSON(model.GeneralResponse{
 		Code:    "000",

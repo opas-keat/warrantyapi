@@ -24,6 +24,14 @@ func (repository *dealerRepositoryImpl) Insert(ctx context.Context, dealers []en
 	return dealers
 }
 
+// GetById implements repository.DealerRepository
+func (repository *dealerRepositoryImpl) GetById(ctx context.Context, id string) entity.Dealer {
+	var result entity.Dealer
+	repository.DB.WithContext(ctx).Debug().
+		First(&result, id)
+	return result
+}
+
 // List implements repository.DealerRepository
 func (repository *dealerRepositoryImpl) List(ctx context.Context, offset int, limit int, order string, search entity.Dealer) []entity.Dealer {
 	var result []entity.Dealer

@@ -10,7 +10,7 @@ type Warranty struct {
 	ID                   uuid.UUID `gorm:"type:uuid;default:gen_random_uuid()"`
 	CreatedBy            string    `gorm:"column:created_by; not null"`
 	WarrantyNo           string    `gorm:"column:warranty_no;size:100; not null"`
-	WarrantyDateTime     string    `gorm:"column:warranty_date;size:16; not null"`
+	WarrantyDateTime     string    `gorm:"column:warranty_date;size:20; not null"`
 	DealerCode           string    `gorm:"column:dealer_code;size:50"`
 	DealerName           string    `gorm:"column:dealer_name;size:255"`
 	CustomerName         string    `gorm:"column:customer_name;size:255; not null"`

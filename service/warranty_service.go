@@ -6,7 +6,7 @@ import (
 )
 
 type WarrantyService interface {
-	Create(ctx context.Context, warrantyRequest []model.WarrantyRequest, createdBy string) []model.WarrantyResponse
+	Create(ctx context.Context, warrantyRequest model.WarrantyRequest, createdBy string) model.WarrantyResponse
 	FindById(ctx context.Context, id int) []model.WarrantyResponse
 	Update(ctx context.Context, warrantyRequest []model.WarrantyRequest, updatedBy string) []model.WarrantyResponse
 	Delete(ctx context.Context, id int, deletedBy string) bool
