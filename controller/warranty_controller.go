@@ -87,7 +87,7 @@ func (controller WarrantyController) update(c *fiber.Ctx) error {
 }
 
 func (controller WarrantyController) delete(c *fiber.Ctx) error {
-	id, _ := c.ParamsInt("id")
+	id := c.Params("id")
 	println(id)
 	userName := middleware.GetUserNameFromToken(c)
 	result := controller.WarrantyService.Delete(c.Context(), id, userName)
@@ -131,7 +131,7 @@ func (controller WarrantyController) list(c *fiber.Ctx) error {
 }
 
 func (controller WarrantyController) findById(c *fiber.Ctx) error {
-	id, _ := c.ParamsInt("id")
+	id := c.Params("id")
 	println(id)
 	result := controller.WarrantyService.FindById(c.Context(), id)
 	return c.Status(fiber.StatusOK).JSON(model.GeneralResponse{

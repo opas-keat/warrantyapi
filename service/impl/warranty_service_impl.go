@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"math/rand"
 	"strconv"
+	"strings"
 	"time"
+	"warrantyapi/common"
 	"warrantyapi/constant"
 	"warrantyapi/entity"
 	"warrantyapi/model"
@@ -35,9 +37,10 @@ type warrantyServiceImpl struct {
 
 // Create implements service.WarrantyService
 func (service *warrantyServiceImpl) Create(ctx context.Context, warrantyInput model.WarrantyRequest, createdBy string) model.WarrantyResponse {
-	rand.Seed(time.Now().UnixNano())
+	// rand.Seed(time.Now().UnixNano())
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	currentTime := time.Now()
-	warrantyNo := "WT-" + currentTime.Format("20060102") + currentTime.Format("150405") + strconv.Itoa(rand.Intn(10))
+	warrantyNo := "WT-" + currentTime.Format("20060102") + currentTime.Format("150405") + strconv.Itoa(1000+r.Intn(10000-1000))
 	fmt.Println("warrantyNo = " + warrantyNo)
 	var warrantys []entity.Warranty
 	warrantys = append(warrantys, entity.Warranty{
@@ -73,25 +76,48 @@ func (service *warrantyServiceImpl) Create(ctx context.Context, warrantyInput mo
 			CustomerEmail:        rs.CustomerEmail,
 			CustomerMile:         rs.CustomerMile,
 		}
-
+		//Insert Product
 		var products []entity.Product
 		for _, product := range warrantyInput.ProductRequest {
+
+			wheelStructureExpire := common.CalculateYearExpire(constant.WarrantyWheelYear)
+			wheelColorExpire := common.CalculateMonthExpire(constant.WarrantyWheelColor)
+			tireExpire := common.CalculateYearExpire(constant.WarrantyTireYear)
+			tireMileExpire := common.CalculateMileExpire(rs.CustomerMile, constant.WarrantyTireMile)
+			promotionExpire := ""
+			if strings.EqualFold(product.ProductBrand, "zestino") {
+				tireExpire = common.CalculateYearExpire(constant.WarrantyTireYearZestino)
+				tireMileExpire = common.CalculateMileExpire(rs.CustomerMile, constant.WarrantyTireMileZestino)
+			}
+			if strings.EqualFold(product.ProductType, "tire") && (product.ProductAmount >= 4) {
+				promotionExpire = common.CalculateDayExpire(constant.WarrantyPromotionTire)
+			}
 			products = append(products, entity.Product{
-				CreatedBy:     createdBy,
-				ProductType:   product.ProductType,
-				ProductBrand:  product.ProductBrand,
-				ProductAmount: product.ProductAmount,
-				WarrantyNo:    rs.WarrantyNo,
+				CreatedBy:              createdBy,
+				ProductType:            product.ProductType,
+				ProductBrand:           product.ProductBrand,
+				ProductAmount:          product.ProductAmount,
+				ProductStructureExpire: wheelStructureExpire,
+				ProductColorExpire:     wheelColorExpire,
+				ProductTireExpire:      tireExpire,
+				ProductMileExpire:      tireMileExpire,
+				ProductPromotionExpire: promotionExpire,
+				WarrantyNo:             rs.WarrantyNo,
 			})
 		}
-		service.ProductRepository.Insert(ctx, products)
-		for _, responseProduct := range products {
+		responseProducts := service.ProductRepository.Insert(ctx, products)
+		for _, responseProduct := range responseProducts {
 			responses.ProductResponse = append(responses.ProductResponse, model.ProductResponse{
-				ID:            responses.ID,
-				ProductType:   responseProduct.ProductType,
-				ProductBrand:  responseProduct.ProductBrand,
-				ProductAmount: responseProduct.ProductAmount,
-				WarrantyNo:    responseProduct.WarrantyNo,
+				ID:                     responseProduct.ID.String(),
+				ProductType:            responseProduct.ProductType,
+				ProductBrand:           responseProduct.ProductBrand,
+				ProductAmount:          responseProduct.ProductAmount,
+				ProductStructureExpire: responseProduct.ProductStructureExpire,
+				ProductColorExpire:     responseProduct.ProductColorExpire,
+				ProductTireExpire:      responseProduct.ProductTireExpire,
+				ProductMileExpire:      responseProduct.ProductMileExpire,
+				ProductPromotionExpire: responseProduct.ProductPromotionExpire,
+				WarrantyNo:             responseProduct.WarrantyNo,
 			})
 		}
 	}
@@ -99,9 +125,10 @@ func (service *warrantyServiceImpl) Create(ctx context.Context, warrantyInput mo
 }
 
 // FindById implements service.WarrantyService
-func (service *warrantyServiceImpl) FindById(ctx context.Context, id int) (responses []model.WarrantyResponse) {
+func (service *warrantyServiceImpl) FindById(ctx context.Context, id string) model.WarrantyResponse {
 	rs := service.WarrantyRepository.GetById(ctx, id)
-	responses = append(responses, model.WarrantyResponse{
+	// var responses model.WarrantyResponse
+	responses := model.WarrantyResponse{
 		ID:                   rs.ID.String(),
 		WarrantyNo:           rs.WarrantyNo,
 		WarrantyDateTime:     rs.WarrantyDateTime,
@@ -112,7 +139,25 @@ func (service *warrantyServiceImpl) FindById(ctx context.Context, id int) (respo
 		CustomerLicensePlate: rs.CustomerLicensePlate,
 		CustomerEmail:        rs.CustomerEmail,
 		CustomerMile:         rs.CustomerMile,
-	})
+	}
+	ProductSearch := entity.Product{
+		WarrantyNo: rs.WarrantyNo,
+	}
+	responseProducts := service.ProductRepository.List(ctx, 0, 100, "", ProductSearch)
+	for _, responseProduct := range responseProducts {
+		responses.ProductResponse = append(responses.ProductResponse, model.ProductResponse{
+			ID:                     responseProduct.ID.String(),
+			ProductType:            responseProduct.ProductType,
+			ProductBrand:           responseProduct.ProductBrand,
+			ProductAmount:          responseProduct.ProductAmount,
+			ProductStructureExpire: responseProduct.ProductStructureExpire,
+			ProductColorExpire:     responseProduct.ProductColorExpire,
+			ProductTireExpire:      responseProduct.ProductTireExpire,
+			ProductMileExpire:      responseProduct.ProductMileExpire,
+			ProductPromotionExpire: responseProduct.ProductPromotionExpire,
+			WarrantyNo:             responseProduct.WarrantyNo,
+		})
+	}
 	return responses
 }
 
@@ -141,14 +186,14 @@ func (service *warrantyServiceImpl) Update(ctx context.Context, warrantyInput []
 }
 
 // Delete implements service.WarrantyService
-func (service *warrantyServiceImpl) Delete(ctx context.Context, id int, deletedBy string) bool {
+func (service *warrantyServiceImpl) Delete(ctx context.Context, id string, deletedBy string) bool {
 	entityDelete := service.WarrantyRepository.GetById(ctx, id)
 
 	service.WarrantyRepository.Delete(ctx, entityDelete)
 	service.LogRepository.Insert(ctx, entity.Log{
 		CreatedBy: deletedBy,
 		Module:    constant.ModuleWarranty,
-		Detail:    "ลบ : การรับประกัน รหัส  " + strconv.FormatUint(uint64(id), 10),
+		Detail:    "ลบ : การรับประกัน รหัส  " + id,
 	})
 
 	return true

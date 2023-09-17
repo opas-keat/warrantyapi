@@ -65,11 +65,16 @@ func (service *productServiceImpl) List(ctx context.Context, offset int, limit i
 
 	for _, rs := range results {
 		responses = append(responses, model.ProductResponse{
-			ID:            rs.ID.String(),
-			ProductType:   rs.ProductType,
-			ProductBrand:  rs.ProductBrand,
-			ProductAmount: rs.ProductAmount,
-			WarrantyNo:    rs.WarrantyNo,
+			ID:                     rs.ID.String(),
+			ProductType:            rs.ProductType,
+			ProductBrand:           rs.ProductBrand,
+			ProductAmount:          rs.ProductAmount,
+			ProductStructureExpire: rs.ProductStructureExpire,
+			ProductColorExpire:     rs.ProductColorExpire,
+			ProductTireExpire:      rs.ProductTireExpire,
+			ProductMileExpire:      rs.ProductMileExpire,
+			ProductPromotionExpire: rs.ProductPromotionExpire,
+			WarrantyNo:             rs.WarrantyNo,
 		})
 	}
 	return responses

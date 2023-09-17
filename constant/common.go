@@ -26,6 +26,16 @@ const (
 )
 
 const (
-	FORMAT_DATE      = "02/01/2006"
-	FORMAT_DATE_TIME = "02/01/2006 15:04:05"
+	FORMAT_DATE        = "02/01/2006"
+	FORMAT_DATE_TIME   = "02/01/2006 15:04:05"
+	WarrantyWheelYear  = 6
+	WarrantyWheelColor = 6
+
+	WarrantyTireYear = 2
+	WarrantyTireMile = 50000
+
+	WarrantyTireYearZestino = 1
+	WarrantyTireMileZestino = 40000
+
+	WarrantyPromotionTire = 60
 )

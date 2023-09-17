@@ -6,6 +6,7 @@ import (
 	"warrantyapi/exception"
 	"warrantyapi/repository"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -25,10 +26,12 @@ func (repository *warrantyRepositoryImpl) Insert(ctx context.Context, warrantys 
 }
 
 // GetById implements repository.WarrantyRepository
-func (repository *warrantyRepositoryImpl) GetById(ctx context.Context, id int) entity.Warranty {
-	var result entity.Warranty
+func (repository *warrantyRepositoryImpl) GetById(ctx context.Context, id string) entity.Warranty {
+	result := entity.Warranty{
+		ID: uuid.MustParse(id),
+	}
 	repository.DB.WithContext(ctx).Debug().
-		First(&result, id)
+		First(&result)
 	return result
 }
 
