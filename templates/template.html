@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8"/>
+  <title>ลงทะเบียนรับประกัน</title>
+</head>
+
+<body>
+  <h3><strong>ลงทะเบียนรับประกัน</strong></h3>
+
+<p><strong>เลขที่ใบรับประกัน</strong> {{ .WarrantyNo }} <strong>วันที่</strong> {{ .WarrantyDateTime }}</p>
+
+<p><strong>ตัวแทนจำหน่าย</strong> {{ .DealerName }}</p>
+
+<hr />
+<p><strong>ชื่อ-นามสกุล</strong> {{ .CustomerName }}</p>
+
+<p><strong>เบอร์โทร</strong> {{ .CustomerPhone }} <strong>Email</strong> {{ .CustomerEmail }}</p>
+
+<p><strong>ทะเบียนรถ</strong> {{ .CustomerLicensePlate }} <strong>เลขไมล์</strong> {{ .CustomerMile }}</p>
+
+<hr />
+{{range .ProductResponse}}
+
+{{if eq .ProductType "wheels" }}
+<p><strong>ประกันสินค้า</strong> ประเภท ล้อแม็ก</p>
+
+<p>แบรนด์ {{ .ProductBrand }} จำนวน {{ .ProductAmount }} วง</p>
+
+<p>- รับประกันโครงสร้าง 5 ปี การรับประกันหมดอายุ {{ .ProductStructureExpire }}</p>
+
+<p>- รับประกันสี 6 เดือน การรับประกันหมดอายุ {{ .ProductColorExpire }}</p>
+{{end}}
+
+{{if eq .ProductType "tire" }}
+<p><strong>ประกันสินค้า</strong> ประเภท ยางรถยนต์</p>
+
+<p>แบรนด์ {{ .ProductBrand }} จำนวน {{ .ProductAmount }} เส้น</p>
+
+<p>- รับประกันคุณภาพตามกระบวนการผลิต 2 ปี การรับประกันหมดอายุ {{ .ProductTireExpire }}</p>
+
+<p>- รับประกันระยะ 50,000 กม. การรับประกันหมดอายุ {{ .ProductMileExpire }} กม.</p>
+
+<p><span style="color:#e74c3c"><strong>**การรับประกันจะหมด หากอย่างใดอย่างหนึ่งถึงก่อน**</strong></span></p>
+{{if ne .ProductBrand "COSMIS" }}
+<p><strong>แคมเปญ</strong>&nbsp;ประเภท ยางรถยนต์</p>
+
+<p>- รับประกัน บาด บวม แตก ตำ&nbsp;60 วัน&nbsp;การรับประกันหมดอายุ&nbsp;17/09/2023</p>
+{{end}}
+
+{{end}}
+
+{{end}}
+<p>&nbsp;</p>
+
+<hr />
+<p>ข้อมูลติดต่อบริษัท</p>
+
+<p>74/14 หมู่ 6 ตำบลบางจาก อำเภอพระประแดง จังหวัดสมุทรปราการ รหัสไปรษณีย์ 10130</p>
+
+<p>อีเมล info@ppsuperwheels.com, โทร 024086794-6, LineID @ppsuperwheels</p>
+
+<p>&nbsp;</p>
+
+</body>
+
+</html>

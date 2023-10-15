@@ -25,5 +25,6 @@ type WarrantyResponse struct {
 	CustomerLicensePlate string            `json:"customer_license_plate"`
 	CustomerEmail        string            `json:"customer_email"`
 	CustomerMile         string            `json:"customer_mile"`
+	Campagne             string            `json:"campagne"`
 	ProductResponse      []ProductResponse `json:"products"`
 }

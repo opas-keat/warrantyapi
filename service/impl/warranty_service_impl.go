@@ -3,8 +3,6 @@ package impl
 import (
 	"context"
 	"fmt"
-	"math/rand"
-	"strconv"
 	"strings"
 	"time"
 	"warrantyapi/common"
@@ -38,9 +36,13 @@ type warrantyServiceImpl struct {
 // Create implements service.WarrantyService
 func (service *warrantyServiceImpl) Create(ctx context.Context, warrantyInput model.WarrantyRequest, createdBy string) model.WarrantyResponse {
 	// rand.Seed(time.Now().UnixNano())
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	// r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	currentTime := time.Now()
-	warrantyNo := "WT-" + currentTime.Format("20060102") + currentTime.Format("150405") + strconv.Itoa(1000+r.Intn(10000-1000))
+	// warrantyNo := "WT-" + currentTime.Format("20060102") + currentTime.Format("150405") + strconv.Itoa(1000+r.Intn(10000-1000))
+	// warrantyNo := currentTime.Format("0601") + strconv.Itoa(100000+r.Intn(1000000-10000))
+	total := service.WarrantyRepository.Total(ctx, entity.Warranty{})
+	//2310000002
+	warrantyNo := currentTime.Format("0601") + fmt.Sprintf("%06d", total+1)
 	fmt.Println("warrantyNo = " + warrantyNo)
 	var warrantys []entity.Warranty
 	warrantys = append(warrantys, entity.Warranty{
@@ -143,7 +145,7 @@ func (service *warrantyServiceImpl) FindById(ctx context.Context, id string) mod
 	ProductSearch := entity.Product{
 		WarrantyNo: rs.WarrantyNo,
 	}
-	responseProducts := service.ProductRepository.List(ctx, 0, 100, "", ProductSearch)
+	responseProducts := service.ProductRepository.List(ctx, 0, 100, "product_type desc", ProductSearch)
 	for _, responseProduct := range responseProducts {
 		responses.ProductResponse = append(responses.ProductResponse, model.ProductResponse{
 			ID:                     responseProduct.ID.String(),

@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"path/filepath"
+	"time"
 	"warrantyapi/common"
 	"warrantyapi/configuration"
 	"warrantyapi/model"
@@ -47,8 +48,8 @@ func (controller FileController) create(c *fiber.Ctx) error {
 		LinkId:    fileAttachInput.LinkId,
 		Module:    fileAttachInput.Module,
 	}
-	println(fileAttachInput.LinkId[3:11])
-	path := common.CreatePathFileForUpload(fileAttachInput.LinkId[3:11])
+	// println(fileAttachInput.LinkId[3:11])
+	path := common.CreatePathFileForUpload(time.Now().Format("20060102"))
 	println("path: " + path)
 	file, err := c.FormFile(fileAttachInput.LinkType)
 	if err != nil {

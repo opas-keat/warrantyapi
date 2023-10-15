@@ -77,6 +77,7 @@ func main() {
 	productController := controller.NewProductController(&productService, config)
 	warrantyController := controller.NewWarrantyController(&warrantyService, config)
 	fileController := controller.NewFileController(config)
+	notificationController := controller.NewNotificationController(&warrantyService, config)
 
 	//setup routing
 	app.Get("/", controller.Hello)
@@ -86,6 +87,7 @@ func main() {
 	productController.Route(app)
 	warrantyController.Route(app)
 	fileController.Route(app)
+	notificationController.Route(app)
 	app.All("*", controller.NotFound)
 
 	bytes := make([]byte, 32) //generate a random 32 byte key for AES-256
