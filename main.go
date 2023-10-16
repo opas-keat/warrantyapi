@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/rand"
 	"os"
 	"os/signal"
 	"time"
@@ -31,6 +30,7 @@ func main() {
 	database := configuration.NewDatabase(config)
 	configuration.NewDatabase(config)
 	zerolog.TimeFieldFormat = time.RFC3339
+	// zerolog.New(os.Stdout).With().Caller().Timestamp().Logger()
 	//setup fiber
 	app := fiber.New(configuration.NewFiberConfiguration())
 
@@ -51,10 +51,12 @@ func main() {
 		},
 	}))
 	app.Use(logger.New(logger.Config{
+
 		Format:     "[${time}] | ${pid} | ${locals:requestid} | ${status} - ${latency} | ${method} | ${path}​\n",
 		TimeFormat: "02-01-2006 15:04:05",
 		TimeZone:   "Asia/Bangkok",
 	}))
+	// app.Use(logger.New(zerolog.New(os.Stdout).With().Caller().Timestamp().Logger()))
 	app.Get("/metrics", monitor.New(monitor.Config{
 		APIOnly: true,
 	}))
@@ -66,11 +68,13 @@ func main() {
 	dealerRepository := repository.NewDealerRepositoryImpl(database)
 	productRepository := repository.NewProductRepositoryImpl(database)
 	warrantyRepository := repository.NewWarrantyRepositoryImpl(database)
+	configRepository := repository.NewConfigRepositoryImpl(database)
 
 	//setup service
 	dealerService := service.NewDealerServiceImpl(&dealerRepository, &logRepository)
 	productService := service.NewProductServiceImpl(&productRepository, &logRepository)
-	warrantyService := service.NewWarrantyServiceImpl(&warrantyRepository, &productRepository, &logRepository)
+	warrantyService := service.NewWarrantyServiceImpl(&warrantyRepository, &productRepository, &configRepository, &logRepository)
+	configService := service.NewConfigServiceImpl(&configRepository, &logRepository)
 
 	//setup controller
 	dealerController := controller.NewDealerController(&dealerService, config)
@@ -78,6 +82,7 @@ func main() {
 	warrantyController := controller.NewWarrantyController(&warrantyService, config)
 	fileController := controller.NewFileController(config)
 	notificationController := controller.NewNotificationController(&warrantyService, config)
+	configController := controller.NewConfigController(&configService, config)
 
 	//setup routing
 	app.Get("/", controller.Hello)
@@ -88,12 +93,13 @@ func main() {
 	warrantyController.Route(app)
 	fileController.Route(app)
 	notificationController.Route(app)
+	configController.Route(app)
 	app.All("*", controller.NotFound)
 
-	bytes := make([]byte, 32) //generate a random 32 byte key for AES-256
-	if _, err := rand.Read(bytes); err != nil {
-		panic(err.Error())
-	}
+	// bytes := make([]byte, 32) //generate a random 32 byte key for AES-256
+	// if _, err := rand.Read(bytes); err != nil {
+	// 	panic(err.Error())
+	// }
 	//update
 	// Close any connections on interrupt signal
 	c := make(chan os.Signal, 1)

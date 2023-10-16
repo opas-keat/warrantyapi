@@ -13,16 +13,19 @@ import (
 	"warrantyapi/service"
 
 	"github.com/google/uuid"
+	"github.com/rs/zerolog/log"
 )
 
 func NewWarrantyServiceImpl(
 	warrantyRepository *repository.WarrantyRepository,
 	productRepository *repository.ProductRepository,
+	configRepository *repository.ConfigRepository,
 	logRepository *repository.LogRepository,
 ) service.WarrantyService {
 	return &warrantyServiceImpl{
 		WarrantyRepository: *warrantyRepository,
 		ProductRepository:  *productRepository,
+		ConfigRepository:   *configRepository,
 		LogRepository:      *logRepository,
 	}
 }
@@ -30,6 +33,7 @@ func NewWarrantyServiceImpl(
 type warrantyServiceImpl struct {
 	repository.WarrantyRepository
 	repository.ProductRepository
+	repository.ConfigRepository
 	repository.LogRepository
 }
 
@@ -37,12 +41,17 @@ type warrantyServiceImpl struct {
 func (service *warrantyServiceImpl) Create(ctx context.Context, warrantyInput model.WarrantyRequest, createdBy string) model.WarrantyResponse {
 	// rand.Seed(time.Now().UnixNano())
 	// r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	currentTime := time.Now()
+	// currentTime := time.Now()
 	// warrantyNo := "WT-" + currentTime.Format("20060102") + currentTime.Format("150405") + strconv.Itoa(1000+r.Intn(10000-1000))
 	// warrantyNo := currentTime.Format("0601") + strconv.Itoa(100000+r.Intn(1000000-10000))
+	configs := service.ConfigRepository.List(ctx, 0, 100, "", entity.Config{})
+	configCal := common.SetConfigCal(configs)
+	log.Debug().
+		Any("configCal", configCal).
+		Send()
 	total := service.WarrantyRepository.Total(ctx, entity.Warranty{})
 	//2310000002
-	warrantyNo := currentTime.Format("0601") + fmt.Sprintf("%06d", total+1)
+	warrantyNo := time.Now().Format("0601") + fmt.Sprintf("%06d", total+1)
 	fmt.Println("warrantyNo = " + warrantyNo)
 	var warrantys []entity.Warranty
 	warrantys = append(warrantys, entity.Warranty{
@@ -57,6 +66,9 @@ func (service *warrantyServiceImpl) Create(ctx context.Context, warrantyInput mo
 		CustomerEmail:        warrantyInput.CustomerEmail,
 		CustomerMile:         warrantyInput.CustomerMile,
 	})
+	log.Debug().
+		Any("warrantys", warrantys).
+		Send()
 	service.WarrantyRepository.Insert(ctx, warrantys)
 	var responses model.WarrantyResponse
 	for _, rs := range warrantys {
@@ -81,45 +93,65 @@ func (service *warrantyServiceImpl) Create(ctx context.Context, warrantyInput mo
 		//Insert Product
 		var products []entity.Product
 		for _, product := range warrantyInput.ProductRequest {
-
-			wheelStructureExpire := common.CalculateYearExpire(constant.WarrantyWheelYear)
-			wheelColorExpire := common.CalculateMonthExpire(constant.WarrantyWheelColor)
-			tireExpire := common.CalculateYearExpire(constant.WarrantyTireYear)
-			tireMileExpire := common.CalculateMileExpire(rs.CustomerMile, constant.WarrantyTireMile)
+			wheelStructureExpire := common.CalculateYearExpire(configCal.WarrantyWheelYear)
+			wheelColorExpire := common.CalculateMonthExpire(configCal.WarrantyWheelColor)
+			tireExpire := common.CalculateYearExpire(configCal.WarrantyTireYear)
+			tireMileExpire := common.CalculateMileExpire(warrantyInput.CustomerMile, configCal.WarrantyTireMile)
 			promotionExpire := ""
 			if strings.EqualFold(product.ProductBrand, "zestino") {
-				tireExpire = common.CalculateYearExpire(constant.WarrantyTireYearZestino)
-				tireMileExpire = common.CalculateMileExpire(rs.CustomerMile, constant.WarrantyTireMileZestino)
+				tireExpire = common.CalculateYearExpire(configCal.WarrantyTireYearZestino)
+				tireMileExpire = common.CalculateMileExpire(warrantyInput.CustomerMile, configCal.WarrantyTireMileZestino)
 			}
 			if strings.EqualFold(product.ProductType, "tire") && (product.ProductAmount >= 4) {
-				promotionExpire = common.CalculateDayExpire(constant.WarrantyPromotionTire)
+				promotionExpire = common.CalculateDayExpire(configCal.WarrantyPromotionTire)
 			}
 			products = append(products, entity.Product{
-				CreatedBy:              createdBy,
-				ProductType:            product.ProductType,
-				ProductBrand:           product.ProductBrand,
-				ProductAmount:          product.ProductAmount,
-				ProductStructureExpire: wheelStructureExpire,
-				ProductColorExpire:     wheelColorExpire,
-				ProductTireExpire:      tireExpire,
-				ProductMileExpire:      tireMileExpire,
-				ProductPromotionExpire: promotionExpire,
-				WarrantyNo:             rs.WarrantyNo,
+				CreatedBy:               createdBy,
+				ProductType:             product.ProductType,
+				ProductBrand:            product.ProductBrand,
+				ProductAmount:           product.ProductAmount,
+				ProductStructureExpire:  wheelStructureExpire,
+				ProductColorExpire:      wheelColorExpire,
+				ProductTireExpire:       tireExpire,
+				ProductMileExpire:       tireMileExpire,
+				ProductPromotionExpire:  promotionExpire,
+				WarrantyNo:              warrantyNo,
+				WarrantyWheelYear:       configCal.WarrantyWheelYear,
+				WarrantyWheelColor:      configCal.WarrantyWheelColor,
+				WarrantyTireYear:        configCal.WarrantyTireYear,
+				WarrantyTireMile:        configCal.WarrantyTireMile,
+				WarrantyTireYearZestino: configCal.WarrantyTireYearZestino,
+				WarrantyTireMileZestino: configCal.WarrantyTireMileZestino,
+				Promotion:               configCal.Campagne,
+				PromotionDay:            configCal.WarrantyPromotionTire,
+				PromotionMile:           0,
 			})
 		}
+		log.Debug().
+			Any("products", products).
+			Send()
 		responseProducts := service.ProductRepository.Insert(ctx, products)
 		for _, responseProduct := range responseProducts {
 			responses.ProductResponse = append(responses.ProductResponse, model.ProductResponse{
-				ID:                     responseProduct.ID.String(),
-				ProductType:            responseProduct.ProductType,
-				ProductBrand:           responseProduct.ProductBrand,
-				ProductAmount:          responseProduct.ProductAmount,
-				ProductStructureExpire: responseProduct.ProductStructureExpire,
-				ProductColorExpire:     responseProduct.ProductColorExpire,
-				ProductTireExpire:      responseProduct.ProductTireExpire,
-				ProductMileExpire:      responseProduct.ProductMileExpire,
-				ProductPromotionExpire: responseProduct.ProductPromotionExpire,
-				WarrantyNo:             responseProduct.WarrantyNo,
+				ID:                      responseProduct.ID.String(),
+				ProductType:             responseProduct.ProductType,
+				ProductBrand:            responseProduct.ProductBrand,
+				ProductAmount:           responseProduct.ProductAmount,
+				ProductStructureExpire:  responseProduct.ProductStructureExpire,
+				ProductColorExpire:      responseProduct.ProductColorExpire,
+				ProductTireExpire:       responseProduct.ProductTireExpire,
+				ProductMileExpire:       responseProduct.ProductMileExpire,
+				ProductPromotionExpire:  responseProduct.ProductPromotionExpire,
+				WarrantyNo:              responseProduct.WarrantyNo,
+				WarrantyWheelYear:       responseProduct.WarrantyWheelYear,
+				WarrantyWheelColor:      responseProduct.WarrantyWheelColor,
+				WarrantyTireYear:        responseProduct.WarrantyTireYear,
+				WarrantyTireMile:        responseProduct.WarrantyTireMile,
+				WarrantyTireYearZestino: responseProduct.WarrantyTireYearZestino,
+				WarrantyTireMileZestino: responseProduct.WarrantyTireMileZestino,
+				Promotion:               responseProduct.Promotion,
+				PromotionDay:            responseProduct.PromotionDay,
+				PromotionMile:           responseProduct.PromotionMile,
 			})
 		}
 	}
@@ -148,16 +180,25 @@ func (service *warrantyServiceImpl) FindById(ctx context.Context, id string) mod
 	responseProducts := service.ProductRepository.List(ctx, 0, 100, "product_type desc", ProductSearch)
 	for _, responseProduct := range responseProducts {
 		responses.ProductResponse = append(responses.ProductResponse, model.ProductResponse{
-			ID:                     responseProduct.ID.String(),
-			ProductType:            responseProduct.ProductType,
-			ProductBrand:           responseProduct.ProductBrand,
-			ProductAmount:          responseProduct.ProductAmount,
-			ProductStructureExpire: responseProduct.ProductStructureExpire,
-			ProductColorExpire:     responseProduct.ProductColorExpire,
-			ProductTireExpire:      responseProduct.ProductTireExpire,
-			ProductMileExpire:      responseProduct.ProductMileExpire,
-			ProductPromotionExpire: responseProduct.ProductPromotionExpire,
-			WarrantyNo:             responseProduct.WarrantyNo,
+			ID:                      responseProduct.ID.String(),
+			ProductType:             responseProduct.ProductType,
+			ProductBrand:            responseProduct.ProductBrand,
+			ProductAmount:           responseProduct.ProductAmount,
+			ProductStructureExpire:  responseProduct.ProductStructureExpire,
+			ProductColorExpire:      responseProduct.ProductColorExpire,
+			ProductTireExpire:       responseProduct.ProductTireExpire,
+			ProductMileExpire:       responseProduct.ProductMileExpire,
+			ProductPromotionExpire:  responseProduct.ProductPromotionExpire,
+			WarrantyNo:              responseProduct.WarrantyNo,
+			WarrantyWheelYear:       responseProduct.WarrantyWheelYear,
+			WarrantyWheelColor:      responseProduct.WarrantyWheelColor,
+			WarrantyTireYear:        responseProduct.WarrantyTireYear,
+			WarrantyTireMile:        responseProduct.WarrantyTireMile,
+			WarrantyTireYearZestino: responseProduct.WarrantyTireYearZestino,
+			WarrantyTireMileZestino: responseProduct.WarrantyTireMileZestino,
+			Promotion:               responseProduct.Promotion,
+			PromotionDay:            responseProduct.PromotionDay,
+			PromotionMile:           responseProduct.PromotionMile,
 		})
 	}
 	return responses
@@ -223,11 +264,25 @@ func (service *warrantyServiceImpl) List(ctx context.Context, offset int, limit 
 		var productResponse []model.ProductResponse
 		for _, product := range products {
 			productResponse = append(productResponse, model.ProductResponse{
-				ID:            product.ID.String(),
-				ProductType:   product.ProductType,
-				ProductBrand:  product.ProductBrand,
-				ProductAmount: product.ProductAmount,
-				WarrantyNo:    product.WarrantyNo,
+				ID:                      product.ID.String(),
+				ProductType:             product.ProductType,
+				ProductBrand:            product.ProductBrand,
+				ProductAmount:           product.ProductAmount,
+				ProductStructureExpire:  product.ProductStructureExpire,
+				ProductColorExpire:      product.ProductColorExpire,
+				ProductTireExpire:       product.ProductTireExpire,
+				ProductMileExpire:       product.ProductMileExpire,
+				ProductPromotionExpire:  product.ProductPromotionExpire,
+				WarrantyNo:              product.WarrantyNo,
+				WarrantyWheelYear:       product.WarrantyWheelYear,
+				WarrantyWheelColor:      product.WarrantyWheelColor,
+				WarrantyTireYear:        product.WarrantyTireYear,
+				WarrantyTireMile:        product.WarrantyTireMile,
+				WarrantyTireYearZestino: product.WarrantyTireYearZestino,
+				WarrantyTireMileZestino: product.WarrantyTireMileZestino,
+				Promotion:               product.Promotion,
+				PromotionDay:            product.PromotionDay,
+				PromotionMile:           product.PromotionMile,
 			})
 		}
 
