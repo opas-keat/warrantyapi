@@ -242,7 +242,37 @@ func (service *warrantyServiceImpl) Delete(ctx context.Context, id string, delet
 	return true
 }
 
-// Create implements service.WarrantyService
+// ListCustomer implements service.WarrantyService
+func (service *warrantyServiceImpl) ListCustomer(ctx context.Context, offset int, limit int, order string, warrantyInput model.WarrantyRequest) []model.WarrantyResponse {
+	searchInput := entity.Warranty{
+		CustomerPhone:        warrantyInput.CustomerPhone,
+		CustomerLicensePlate: warrantyInput.CustomerLicensePlate,
+		CustomerEmail:        warrantyInput.CustomerEmail,
+	}
+	warrantys := service.WarrantyRepository.ListCustomer(ctx, offset, limit, order, searchInput)
+	if len(warrantys) == 0 {
+		return []model.WarrantyResponse{}
+	}
+
+	var warrantyResponse []model.WarrantyResponse
+	for _, warranty := range warrantys {
+		warrantyResponse = append(warrantyResponse, model.WarrantyResponse{
+			ID:                   warranty.ID.String(),
+			WarrantyNo:           warranty.WarrantyNo,
+			WarrantyDateTime:     warranty.WarrantyDateTime,
+			DealerCode:           warranty.DealerCode,
+			DealerName:           warranty.DealerName,
+			CustomerName:         warranty.CustomerName,
+			CustomerPhone:        warranty.CustomerPhone,
+			CustomerLicensePlate: warranty.CustomerLicensePlate,
+			CustomerEmail:        warranty.CustomerEmail,
+			CustomerMile:         warranty.CustomerMile,
+		})
+	}
+	return warrantyResponse
+}
+
+// List implements service.WarrantyService
 func (service *warrantyServiceImpl) List(ctx context.Context, offset int, limit int, order string, warrantyInput model.WarrantyRequest) []model.WarrantyResponse {
 	searchInput := entity.Warranty{
 		CustomerPhone:        warrantyInput.CustomerPhone,
@@ -285,7 +315,9 @@ func (service *warrantyServiceImpl) List(ctx context.Context, offset int, limit 
 				PromotionMile:           product.PromotionMile,
 			})
 		}
-
+		imageFolder := warranty.WarrantyDateTime[6:10] + warranty.WarrantyDateTime[3:5] + warranty.WarrantyDateTime[0:2]
+		pathImageCar := "/uploads/" + imageFolder + "/" + warranty.WarrantyNo + "_car.png"
+		pathImageReceive := "/uploads/" + imageFolder + "/" + warranty.WarrantyNo + "_receive.png"
 		warrantyResponse = append(warrantyResponse, model.WarrantyResponse{
 			ID:                   warranty.ID.String(),
 			WarrantyNo:           warranty.WarrantyNo,
@@ -298,6 +330,8 @@ func (service *warrantyServiceImpl) List(ctx context.Context, offset int, limit 
 			CustomerEmail:        warranty.CustomerEmail,
 			CustomerMile:         warranty.CustomerMile,
 			ProductResponse:      productResponse,
+			UrlCar:               pathImageCar,
+			UrlReceive:           pathImageReceive,
 		})
 	}
 	return warrantyResponse

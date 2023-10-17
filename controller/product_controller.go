@@ -51,7 +51,7 @@ func (controller ProductController) list(c *fiber.Ctx) error {
 	if err := c.QueryParser(p); err != nil {
 		return err
 	}
-	warrantyNo := c.Query("warranty_no")
+	warrantyId := c.Query("warranty_id")
 	println(p.Offset)
 	println(p.Limit)
 	println(p.Order)
@@ -59,7 +59,7 @@ func (controller ProductController) list(c *fiber.Ctx) error {
 		p.Limit = 50
 	}
 	productSearch := model.ProductRequest{
-		WarrantyNo: warrantyNo,
+		ID: warrantyId,
 	}
 	result := controller.ProductService.List(c.Context(), p.Offset, p.Limit, p.Order, productSearch)
 	return c.Status(fiber.StatusOK).JSON(model.GeneralResponse{

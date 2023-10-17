@@ -26,4 +26,6 @@ type WarrantyResponse struct {
 	CustomerEmail        string            `json:"customer_email"`
 	CustomerMile         string            `json:"customer_mile"`
 	ProductResponse      []ProductResponse `json:"products"`
+	UrlCar               string            `json:"url_car"`
+	UrlReceive           string            `json:"url_receive"`
 }

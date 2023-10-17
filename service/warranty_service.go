@@ -10,5 +10,6 @@ type WarrantyService interface {
 	FindById(ctx context.Context, id string) model.WarrantyResponse
 	Update(ctx context.Context, warrantyRequest []model.WarrantyRequest, updatedBy string) []model.WarrantyResponse
 	Delete(ctx context.Context, id string, deletedBy string) bool
+	ListCustomer(ctx context.Context, offset int, limit int, order string, warrantySearch model.WarrantyRequest) []model.WarrantyResponse
 	List(ctx context.Context, offset int, limit int, order string, warrantySearch model.WarrantyRequest) []model.WarrantyResponse
 }

@@ -26,28 +26,50 @@
 
 {{if eq .ProductType "wheels" }}
 <p><strong>ประกันสินค้า</strong> ประเภท ล้อแม็ก</p>
-
-<p>แบรนด์ {{ .ProductBrand }} จำนวน {{ .ProductAmount }} วง</p>
-
-<p>- รับประกันโครงสร้าง 5 ปี การรับประกันหมดอายุ {{ .ProductStructureExpire }}</p>
-
-<p>- รับประกันสี 6 เดือน การรับประกันหมดอายุ {{ .ProductColorExpire }}</p>
+<table border="0" cellpadding="1" cellspacing="1" style="width:500px">
+	<tbody>
+		<tr>
+			<td><strong>แบรนด์ {{ .ProductBrand }} จำนวน {{ .ProductAmount }} วง</strong></td>
+			<td style="text-align:right">การรับประกันหมดอายุ</td>
+		</tr>
+		<tr>
+			<td>- รับประกันโครงสร้าง {{ .WarrantyWheelYear }} ปี</td>
+			<td style="text-align:right">{{ .ProductStructureExpire }}</td>
+		</tr>
+		<tr>
+			<td>- รับประกันสี {{ .WarrantyWheelColor }} เดือน</td>
+			<td style="text-align:right">{{ .ProductColorExpire }}</td>
+		</tr>
+	</tbody>
+</table>
 {{end}}
 
 {{if eq .ProductType "tire" }}
 <p><strong>ประกันสินค้า</strong> ประเภท ยางรถยนต์</p>
-
-<p>แบรนด์ {{ .ProductBrand }} จำนวน {{ .ProductAmount }} เส้น</p>
-
-<p>- รับประกันคุณภาพตามกระบวนการผลิต 2 ปี การรับประกันหมดอายุ {{ .ProductTireExpire }}</p>
-
-<p>- รับประกันระยะ 50,000 กม. การรับประกันหมดอายุ {{ .ProductMileExpire }} กม.</p>
+<table border="0" cellpadding="1" cellspacing="1" style="width:500px">
+	<thead>
+		<tr>
+			<th scope="col" style="text-align: left;">แบรนด์ {{ .ProductBrand }} จำนวน {{ .ProductAmount }} เส้น</th>
+			<th scope="col" style="text-align: right;">การรับประกันหมดอายุ</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>&nbsp;- รับประกันคุณภาพตามกระบวนการผลิต {{ .WarrantyTireYear }} ปี</td>
+			<td style="text-align:right">{{ .ProductTireExpire }}</td>
+		</tr>
+		<tr>
+			<td>-&nbsp;รับประกันระยะ&nbsp;{{ .WarrantyTireMile }} กม.</td>
+			<td style="text-align:right">{{ .ProductMileExpire }}&nbsp;กม.</td>
+		</tr>
+	</tbody>
+</table>
 
 <p><span style="color:#e74c3c"><strong>**การรับประกันจะหมด หากอย่างใดอย่างหนึ่งถึงก่อน**</strong></span></p>
 {{if ne .ProductBrand "COSMIS" }}
 <p><strong>แคมเปญ</strong>&nbsp;ประเภท ยางรถยนต์</p>
 
-<p>- รับประกัน บาด บวม แตก ตำ&nbsp;60 วัน&nbsp;การรับประกันหมดอายุ&nbsp;17/09/2023</p>
+<p>- รับประกัน บาด บวม แตก ตำ&nbsp;{{ .PromotionDay }} วัน&nbsp;การรับประกันหมดอายุ&nbsp;{{ .ProductPromotionExpire }}</p>
 {{end}}
 
 {{end}}
