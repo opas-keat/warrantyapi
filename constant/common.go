@@ -4,6 +4,7 @@ const (
 	ModuleDealer   = "dealer"
 	ModuleProduct  = "product"
 	ModuleWarranty = "warranty"
+	ModuleConfig   = "config"
 )
 
 const (

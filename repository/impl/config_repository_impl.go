@@ -39,6 +39,14 @@ func (repository *configRepositoryImpl) Update(ctx context.Context, config []ent
 	return config
 }
 
+// // UpdateWithConfigCode implements repository.ConfigRepository
+// func (repository *configRepositoryImpl) UpdateWithConfigCode(ctx context.Context, config []entity.Config) []entity.Config {
+// 	repository.DB.WithContext(ctx).Where("config_code = ?", ).Update("name", "hello")
+// 	err := repository.DB.WithContext(ctx).Save(&config).Error
+// 	exception.PanicLogging(err)
+// 	return config
+// }
+
 // Delete implements repository.ConfigRepository
 func (repository *configRepositoryImpl) Delete(ctx context.Context, config entity.Config) bool {
 	repository.DB.WithContext(ctx).Debug().Delete(&config)

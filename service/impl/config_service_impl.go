@@ -2,6 +2,7 @@ package impl
 
 import (
 	"context"
+	"warrantyapi/constant"
 	"warrantyapi/entity"
 	"warrantyapi/model"
 	"warrantyapi/repository"
@@ -23,66 +24,43 @@ type configServiceImpl struct {
 	repository.LogRepository
 }
 
-// // FindById implements service.ConfigService
-// func (service *configServiceImpl) FindById(ctx context.Context, id string) model.WarrantyResponse {
-// 	rs := service.WarrantyRepository.GetById(ctx, id)
-// 	// var responses model.WarrantyResponse
-// 	responses := model.WarrantyResponse{
-// 		ID:                   rs.ID.String(),
-// 		WarrantyNo:           rs.WarrantyNo,
-// 		WarrantyDateTime:     rs.WarrantyDateTime,
-// 		DealerCode:           rs.DealerCode,
-// 		DealerName:           rs.DealerName,
-// 		CustomerName:         rs.CustomerName,
-// 		CustomerPhone:        rs.CustomerPhone,
-// 		CustomerLicensePlate: rs.CustomerLicensePlate,
-// 		CustomerEmail:        rs.CustomerEmail,
-// 		CustomerMile:         rs.CustomerMile,
-// 	}
-// 	ProductSearch := entity.Product{
-// 		WarrantyNo: rs.WarrantyNo,
-// 	}
-// 	responseProducts := service.ProductRepository.List(ctx, 0, 100, "product_type desc", ProductSearch)
-// 	for _, responseProduct := range responseProducts {
-// 		responses.ProductResponse = append(responses.ProductResponse, model.ProductResponse{
-// 			ID:                     responseProduct.ID.String(),
-// 			ProductType:            responseProduct.ProductType,
-// 			ProductBrand:           responseProduct.ProductBrand,
-// 			ProductAmount:          responseProduct.ProductAmount,
-// 			ProductStructureExpire: responseProduct.ProductStructureExpire,
-// 			ProductColorExpire:     responseProduct.ProductColorExpire,
-// 			ProductTireExpire:      responseProduct.ProductTireExpire,
-// 			ProductMileExpire:      responseProduct.ProductMileExpire,
-// 			ProductPromotionExpire: responseProduct.ProductPromotionExpire,
-// 			WarrantyNo:             responseProduct.WarrantyNo,
-// 		})
-// 	}
-// 	return responses
-// }
+// Update implements service.ConfigService
+func (service *configServiceImpl) Update(ctx context.Context, searchRequest []model.ConfigRequest, updatedBy string) []model.ConfigResponse {
+	searchEntity := entity.Config{
+		ConfigCode: searchRequest[0].ConfigCode,
+	}
+	results := service.ConfigRepository.List(ctx, 0, 1, "", searchEntity)
+	if len(results) == 0 {
+		return []model.ConfigResponse{}
+	}
 
-// // Update implements service.WarrantyService
-// func (service *configServiceImpl) Update(ctx context.Context, warrantyInput []model.WarrantyRequest, updatedBy string) []model.WarrantyResponse {
-// 	var warrantys []entity.Warranty
-// 	for _, warranty := range warrantyInput {
-// 		warrantys = append(warrantys, entity.Warranty{
-// 			ID: uuid.MustParse(warranty.ID),
-// 		})
-// 	}
-// 	service.WarrantyRepository.Update(ctx, warrantys)
-// 	var responses []model.WarrantyResponse
-// 	for _, rs := range warrantys {
-// 		service.LogRepository.Insert(ctx, entity.Log{
-// 			CreatedBy: updatedBy,
-// 			Module:    constant.ModuleWarranty,
-// 			Detail:    "แก้ไข : การรับประกัน รหัส  " + rs.ID.String() + " " + rs.WarrantyNo,
-// 		})
+	var configs []entity.Config
+	for _, rs := range results {
+		configs = append(configs, entity.Config{
+			ID:           rs.ID,
+			ConfigCode:   rs.ConfigCode,
+			ConfigDetail: rs.ConfigDetail,
+			ConfigValue:  searchRequest[0].ConfigValue,
+		})
+	}
+	service.ConfigRepository.Update(ctx, configs)
+	var configsResponse []model.ConfigResponse
+	for _, rs := range configs {
+		service.LogRepository.Insert(ctx, entity.Log{
+			CreatedBy: updatedBy,
+			Module:    constant.ModuleConfig,
+			Detail:    "แก้ไข : การตั้งค่า รหัส  " + rs.ID.String() + " " + rs.ConfigCode + " " + rs.ConfigValue,
+		})
 
-// 		responses = append(responses, model.WarrantyResponse{
-// 			ID: rs.ID.String(),
-// 		})
-// 	}
-// 	return responses
-// }
+		configsResponse = append(configsResponse, model.ConfigResponse{
+			ID:           rs.ID.String(),
+			ConfigCode:   rs.ConfigCode,
+			ConfigDetail: rs.ConfigDetail,
+			ConfigValue:  rs.ConfigValue,
+		})
+	}
+	return configsResponse
+}
 
 // List implements service.ConfigService
 func (service *configServiceImpl) List(ctx context.Context, offset int, limit int, order string, searchRequest model.ConfigRequest) (responses []model.ConfigResponse) {
@@ -96,9 +74,10 @@ func (service *configServiceImpl) List(ctx context.Context, offset int, limit in
 
 	for _, rs := range results {
 		responses = append(responses, model.ConfigResponse{
-			ID:          rs.ID.String(),
-			ConfigCode:  rs.ConfigCode,
-			ConfigValue: rs.ConfigValue,
+			ID:           rs.ID.String(),
+			ConfigCode:   rs.ConfigCode,
+			ConfigDetail: rs.ConfigDetail,
+			ConfigValue:  rs.ConfigValue,
 		})
 	}
 	return responses
