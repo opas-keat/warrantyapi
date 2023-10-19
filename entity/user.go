@@ -20,3 +20,10 @@ type User struct {
 func (User) TableName() string {
 	return "wt_user"
 }
+
+type UserAuth struct {
+	ID        uint   `json:"id"`
+	UserName  string `gorm:"size:255;not null"`
+	Passwords string `gorm:"size:255;not null"`
+	UserType  string `gorm:"size:1;not null"`
+}
