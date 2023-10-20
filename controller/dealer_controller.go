@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 
 	"warrantyapi/configuration"
+	"warrantyapi/middleware"
 	"warrantyapi/model"
 	"warrantyapi/service"
 )
@@ -21,9 +22,9 @@ func NewDealerController(DealerService *service.DealerService, config configurat
 func (controller DealerController) Route(app *fiber.App) {
 	apiV1 := app.Group(controller.Config.Get("API_CONTEXT_PATH") + "/v1")
 	api := apiV1.Group("/dealer")
-	api.Post("/", controller.create)
+	api.Post("/", middleware.AuthenticateJWT("ROLE_USER"), controller.create)
 	// station.Post("/", middleware.AuthenticateJWT("ROLE_USER"), controller.CreateDealer)
-	api.Get("/", controller.list)
+	api.Get("/", middleware.AuthenticateJWT("ROLE_USER"), controller.list)
 	// api.Get("/:id", controller.findById)
 }
 

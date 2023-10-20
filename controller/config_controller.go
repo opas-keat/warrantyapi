@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 
 	"warrantyapi/configuration"
+	"warrantyapi/middleware"
 	"warrantyapi/model"
 	"warrantyapi/service"
 )
@@ -21,8 +22,8 @@ func (controller ConfigController) Route(app *fiber.App) {
 	apiV1 := app.Group(controller.Config.Get("API_CONTEXT_PATH") + "/v1")
 	api := apiV1.Group("/config")
 	// api.Post("/", controller.create)
-	api.Put("/", controller.update)
-	api.Get("/", controller.list)
+	api.Put("/", middleware.AuthenticateJWT("ROLE_ADMIN"),controller.update)
+	api.Get("/", middleware.AuthenticateJWT("ROLE_ADMIN"), controller.list)
 }
 
 func (controller ConfigController) update(c *fiber.Ctx) error {

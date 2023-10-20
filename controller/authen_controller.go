@@ -54,9 +54,9 @@ func (controller AuthenController) Login(c *fiber.Ctx) error {
 	}
 	tokenJwtResult := common.GenerateToken(result.UserName, userRoles)
 	resultWithToken := map[string]interface{}{
-		"token":    tokenJwtResult,
-		"username": result.UserName,
-		"roles":    userRoles,
+		"token":     tokenJwtResult,
+		"user_name": result.UserName,
+		"roles":     userRoles,
 	}
 	return c.Status(fiber.StatusOK).JSON(model.GeneralResponse{
 		Code:    constant.STATUS_CODE_OK,
