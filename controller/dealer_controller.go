@@ -39,8 +39,8 @@ func (controller DealerController) create(c *fiber.Ctx) error {
 	for _, dealer := range dealersInput.Dealers {
 		println(dealer.DealerCode)
 	}
-	// userName := middleware.GetUserNameFromToken(c)
-	userName := "admin"
+	userName := middleware.GetUserNameFromToken(c)
+	// userName := "admin"
 	result := controller.DealerService.Create(c.Context(), dealersInput.Dealers, userName)
 	return c.Status(fiber.StatusOK).JSON(model.GeneralResponse{
 		Code:    "000",

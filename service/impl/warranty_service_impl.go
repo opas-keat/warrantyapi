@@ -3,6 +3,7 @@ package impl
 import (
 	"context"
 	"fmt"
+	"path/filepath"
 	"strings"
 	"time"
 	"warrantyapi/common"
@@ -316,8 +317,20 @@ func (service *warrantyServiceImpl) List(ctx context.Context, offset int, limit 
 			})
 		}
 		imageFolder := warranty.WarrantyDateTime[6:10] + warranty.WarrantyDateTime[3:5] + warranty.WarrantyDateTime[0:2]
-		pathImageCar := "/uploads/" + imageFolder + "/" + warranty.WarrantyNo + "_car.png"
-		pathImageReceive := "/uploads/" + imageFolder + "/" + warranty.WarrantyNo + "_receive.png"
+		pathImageCar := ""
+		pathImageReceive := ""
+		files, _ := filepath.Glob("uploads/" + imageFolder + "/" + warranty.WarrantyNo + "_car*")
+		fmt.Println(len(files))
+		for _, file := range files {
+			pathImageCar = file
+		}
+		filesReceive, _ := filepath.Glob("uploads/" + imageFolder + "/" + warranty.WarrantyNo + "_receive*")
+		fmt.Println(len(filesReceive))
+		for _, file := range filesReceive {
+			pathImageReceive = file
+		}
+		// pathImageCar := "/uploads/" + imageFolder + "/" + warranty.WarrantyNo + "_car.png"
+		// pathImageReceive := "/uploads/" + imageFolder + "/" + warranty.WarrantyNo + "_receive.png"
 		warrantyResponse = append(warrantyResponse, model.WarrantyResponse{
 			ID:                   warranty.ID.String(),
 			WarrantyNo:           warranty.WarrantyNo,
