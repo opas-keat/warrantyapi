@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"log"
 	"warrantyapi/configuration"
+	"warrantyapi/model"
 	"warrantyapi/service"
 
 	"github.com/gofiber/fiber/v2"
@@ -56,10 +57,12 @@ func (controller NotificationController) email(c *fiber.Ctx) error {
 	fmt.Println("Try sending mail...")
 	m := gomail.NewMessage()
 	m.SetHeader("From", "noreply@ppsuperwheels.com")
-	m.SetHeader("To", "opas.miracle@gmail.com")
+	m.SetHeader("To", warranty.CustomerEmail)
 	// m.SetAddressHeader("Cc", "<RECIPIENT CC>", "<RECIPIENT CC NAME>")
 	m.SetHeader("Subject", "ลงทะเบียนรับประกัน")
 	m.SetBody("text/html", result)
+	m.Embed("./templates/logo.png")
+	m.Embed("./templates/lineid.png")
 	// m.Attach("template.html")// attach whatever you want
 
 	d := gomail.NewDialer("mail.ppsuperwheels.com", 25, "noreply@ppsuperwheels.com", "+PPsuper@1234")
@@ -72,5 +75,9 @@ func (controller NotificationController) email(c *fiber.Ctx) error {
 	if err != nil {
 		print("Error occurred when send email : " + err.Error())
 	}
-	return err
+	return c.Status(fiber.StatusOK).JSON(model.GeneralResponse{
+		Code:    "000",
+		Message: "Success",
+		Data:    "",
+	})
 }

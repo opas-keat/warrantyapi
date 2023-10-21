@@ -8,19 +8,46 @@
 </head>
 
 <body>
-  <h3><strong>ลงทะเบียนรับประกัน</strong></h3>
+<table border="0" cellpadding="1" cellspacing="1" style="width:500px">
+	<tbody>
+		<tr>
+			<td style="text-align:center"><img width="220px" height="40px" alt="Logo" src="cid:logo.png" /></td>
+		</tr>
+		<tr>
+			<td style="text-align:center"><h3><strong>ลงทะเบียนรับประกัน</strong></h3></td>
+		</tr>
+	</tbody>
+</table>  
 
-<p><strong>เลขที่ใบรับประกัน</strong> {{ .WarrantyNo }} <strong>วันที่</strong> {{ .WarrantyDateTime }}</p>
-
-<p><strong>ตัวแทนจำหน่าย</strong> {{ .DealerName }}</p>
-
+<table border="0" cellpadding="1" cellspacing="1" style="width:500px">
+	<tbody>
+		<tr>
+			<td><strong>เลขที่ใบรับประกัน</strong> {{ .WarrantyNo }}</td>
+			<td style="text-align:right"><strong>วันที่</strong> {{ .WarrantyDateTime }}</td>
+		</tr>
+		<tr>
+			<td><strong>ตัวแทนจำหน่าย</strong> {{ .DealerName }}</td>
+			<td style="text-align:right"></td>
+		</tr>
+	</tbody>
+</table>
 <hr />
-<p><strong>ชื่อ-นามสกุล</strong> {{ .CustomerName }}</p>
-
-<p><strong>เบอร์โทร</strong> {{ .CustomerPhone }} <strong>Email</strong> {{ .CustomerEmail }}</p>
-
-<p><strong>ทะเบียนรถ</strong> {{ .CustomerLicensePlate }} <strong>เลขไมล์</strong> {{ .CustomerMile }}</p>
-
+<table border="0" cellpadding="1" cellspacing="1" style="width:500px">
+	<tbody>
+		<tr>
+			<td><strong>ชื่อ-นามสกุล</strong> {{ .CustomerName }}</td>
+			<td style="text-align:right"></td>
+		</tr>
+		<tr>
+			<td><strong>เบอร์โทร</strong> {{ .CustomerPhone }}</td>
+			<td style="text-align:right"><strong>Email</strong> {{ .CustomerEmail }}</td>
+		</tr>
+		<tr>
+			<td><strong>ทะเบียนรถ</strong> {{ .CustomerLicensePlate }}</td>
+			<td style="text-align:right"><strong>เลขไมล์</strong> {{ .CustomerMile }}</td>
+		</tr>
+	</tbody>
+</table>
 <hr />
 {{range .ProductResponse}}
 
@@ -65,11 +92,26 @@
 	</tbody>
 </table>
 
-<p><span style="color:#e74c3c"><strong>**การรับประกันจะหมด หากอย่างใดอย่างหนึ่งถึงก่อน**</strong></span></p>
+<table border="0" cellpadding="1" cellspacing="1" style="width:500px">
+	<tbody>
+		<tr>
+			<td style="text-align:center"><span style="color:#e74c3c"><strong>**การรับประกันจะหมด หากอย่างใดอย่างหนึ่งถึงก่อน**</strong></span></td>
+		</tr>
+	</tbody>
+</table>
 {{if ne .ProductBrand "COSMIS" }}
-<p><strong>แคมเปญ</strong>&nbsp;ประเภท ยางรถยนต์</p>
-
-<p>- รับประกัน บาด บวม แตก ตำ&nbsp;{{ .PromotionDay }} วัน&nbsp;การรับประกันหมดอายุ&nbsp;{{ .ProductPromotionExpire }}</p>
+<table border="0" cellpadding="1" cellspacing="1" style="width:500px">
+	<thead>
+		<tr>
+			<th scope="col" style="text-align:left"><strong>แคมเปญ</strong>&nbsp;ประเภท ยางรถยนต์</th>
+			<th scope="col" style="text-align:right">การรับประกันหมดอายุ</th>
+		</tr>
+		<tr>
+			<td>&nbsp;- รับประกัน บาด บวม แตก ตำ&nbsp;{{ .PromotionDay }} วัน</td>
+			<td style="text-align:right">{{ .ProductPromotionExpire }}</td>
+		</tr>
+	</thead>
+</table>
 {{end}}
 
 {{end}}
@@ -78,14 +120,20 @@
 <p>&nbsp;</p>
 
 <hr />
-<p>ข้อมูลติดต่อบริษัท</p>
+<table border="0" cellpadding="1" cellspacing="1" style="width:620px">
+	<tbody>
+		<tr>
+			<td>
+			<p>ข้อมูลติดต่อบริษัท</p>
 
-<p>74/14 หมู่ 6 ตำบลบางจาก อำเภอพระประแดง จังหวัดสมุทรปราการ รหัสไปรษณีย์ 10130</p>
+			<p>74/14 หมู่ 6 ตำบลบางจาก อำเภอพระประแดง จังหวัดสมุทรปราการ รหัสไปรษณีย์ 10130</p>
 
-<p>อีเมล info@ppsuperwheels.com, โทร 024086794-6, LineID @ppsuperwheels</p>
-
-<p>&nbsp;</p>
-
+			<p>อีเมล info@ppsuperwheels.com, โทร 024086794-6, LineID @ppsuperwheels</p>
+			</td>
+			<td ><img width="120px" height="120px" alt="LineID" src="cid:lineid.png" /></td>
+		</tr>
+	</tbody>
+</table>
 </body>
 
 </html>

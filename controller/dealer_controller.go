@@ -24,7 +24,7 @@ func (controller DealerController) Route(app *fiber.App) {
 	api := apiV1.Group("/dealer")
 	api.Post("/", middleware.AuthenticateJWT("ROLE_USER"), controller.create)
 	// station.Post("/", middleware.AuthenticateJWT("ROLE_USER"), controller.CreateDealer)
-	api.Get("/", middleware.AuthenticateJWT("ROLE_USER"), controller.list)
+	api.Get("/", controller.list)
 	// api.Get("/:id", controller.findById)
 }
 
