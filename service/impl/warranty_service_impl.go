@@ -45,6 +45,10 @@ func (service *warrantyServiceImpl) Create(ctx context.Context, warrantyInput mo
 	// currentTime := time.Now()
 	// warrantyNo := "WT-" + currentTime.Format("20060102") + currentTime.Format("150405") + strconv.Itoa(1000+r.Intn(10000-1000))
 	// warrantyNo := currentTime.Format("0601") + strconv.Itoa(100000+r.Intn(1000000-10000))
+	loc, err := time.LoadLocation("Asia/Bangkok")
+	if err != nil {
+		fmt.Println("Error loading location:", err)
+	}
 	configs := service.ConfigRepository.List(ctx, 0, 100, "", entity.Config{})
 	configCal := common.SetConfigCal(configs)
 	log.Debug().
@@ -58,7 +62,7 @@ func (service *warrantyServiceImpl) Create(ctx context.Context, warrantyInput mo
 	warrantys = append(warrantys, entity.Warranty{
 		CreatedBy:            createdBy,
 		WarrantyNo:           warrantyNo,
-		WarrantyDateTime:     time.Now().Format(constant.FORMAT_DATE_TIME),
+		WarrantyDateTime:     time.Now().In(loc).Format(constant.FORMAT_DATE_TIME),
 		DealerCode:           warrantyInput.DealerCode,
 		DealerName:           warrantyInput.DealerName,
 		CustomerName:         warrantyInput.CustomerName,
