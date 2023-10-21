@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+	_ "time/tzdata"
 	"warrantyapi/common"
 	"warrantyapi/constant"
 	"warrantyapi/entity"
