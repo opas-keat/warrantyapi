@@ -22,13 +22,15 @@ func NewWarrantyServiceImpl(
 	warrantyRepository *repository.WarrantyRepository,
 	productRepository *repository.ProductRepository,
 	configRepository *repository.ConfigRepository,
+	promotionRepository *repository.PromotionRepository,
 	logRepository *repository.LogRepository,
 ) service.WarrantyService {
 	return &warrantyServiceImpl{
-		WarrantyRepository: *warrantyRepository,
-		ProductRepository:  *productRepository,
-		ConfigRepository:   *configRepository,
-		LogRepository:      *logRepository,
+		WarrantyRepository:  *warrantyRepository,
+		ProductRepository:   *productRepository,
+		ConfigRepository:    *configRepository,
+		PromotionRepository: *promotionRepository,
+		LogRepository:       *logRepository,
 	}
 }
 
@@ -36,6 +38,7 @@ type warrantyServiceImpl struct {
 	repository.WarrantyRepository
 	repository.ProductRepository
 	repository.ConfigRepository
+	repository.PromotionRepository
 	repository.LogRepository
 }
 
@@ -103,13 +106,26 @@ func (service *warrantyServiceImpl) Create(ctx context.Context, warrantyInput mo
 			wheelColorExpire := common.CalculateMonthExpire(configCal.WarrantyWheelColor)
 			tireExpire := common.CalculateYearExpire(configCal.WarrantyTireYear)
 			tireMileExpire := common.CalculateMileExpire(warrantyInput.CustomerMile, configCal.WarrantyTireMile)
-			promotionExpire := ""
 			if strings.EqualFold(product.ProductBrand, "zestino") {
 				tireExpire = common.CalculateYearExpire(configCal.WarrantyTireYearZestino)
 				tireMileExpire = common.CalculateMileExpire(warrantyInput.CustomerMile, configCal.WarrantyTireMileZestino)
 			}
+			promotionExpire := ""
+			promotionDetail := ""
+			promotionDay := 0
 			if strings.EqualFold(product.ProductType, "tire") && (product.ProductAmount >= 4) {
-				promotionExpire = common.CalculateDayExpire(configCal.WarrantyPromotionTire)
+				warrantyCreatedDate := time.Now().In(loc)
+				promotion := entity.Promotion{
+					PromotionStatus: "active",
+					PromotionType:   product.ProductType,
+					PromotionBrand:  strings.ToUpper(product.ProductBrand),
+				}
+				promotions := service.PromotionRepository.ListActivePromotion(ctx, 0, 1, "promotion_status asc,promotion_type desc", promotion, warrantyCreatedDate)
+				if len(promotions) > 0 {
+					promotionDetail = promotions[0].PromotionDetail
+					promotionDay = promotions[0].PromotionWarrantyDay
+				}
+				promotionExpire = common.CalculateDayExpire(promotionDay)
 			}
 			products = append(products, entity.Product{
 				CreatedBy:               createdBy,
@@ -128,8 +144,8 @@ func (service *warrantyServiceImpl) Create(ctx context.Context, warrantyInput mo
 				WarrantyTireMile:        configCal.WarrantyTireMile,
 				WarrantyTireYearZestino: configCal.WarrantyTireYearZestino,
 				WarrantyTireMileZestino: configCal.WarrantyTireMileZestino,
-				Promotion:               configCal.Campagne,
-				PromotionDay:            configCal.WarrantyPromotionTire,
+				Promotion:               promotionDetail,
+				PromotionDay:            promotionDay,
 				PromotionMile:           0,
 			})
 		}

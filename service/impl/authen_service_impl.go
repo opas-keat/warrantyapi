@@ -12,7 +12,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func NewAuthenRepositoryImpl(authenRepository *repository.AuthenRepository) service.AuthenService {
+func NewAuthenServiceImpl(authenRepository *repository.AuthenRepository) service.AuthenService {
 	return &authenServiceImpl{
 		AuthenRepository: *authenRepository,
 	}

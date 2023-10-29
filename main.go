@@ -71,14 +71,16 @@ func main() {
 	configRepository := repository.NewConfigRepositoryImpl(database)
 	userRepository := repository.NewUserRepositoryImpl(database)
 	authenRepository := repository.NewAuthenRepositoryImpl(database)
+	promotionRepository := repository.NewPromotionRepositoryImpl(database)
 
 	//setup service
 	dealerService := service.NewDealerServiceImpl(&dealerRepository, &logRepository)
 	productService := service.NewProductServiceImpl(&productRepository, &logRepository)
-	warrantyService := service.NewWarrantyServiceImpl(&warrantyRepository, &productRepository, &configRepository, &logRepository)
+	warrantyService := service.NewWarrantyServiceImpl(&warrantyRepository, &productRepository, &configRepository, &promotionRepository, &logRepository)
 	configService := service.NewConfigServiceImpl(&configRepository, &logRepository)
 	userService := service.NewUserServiceImpl(&userRepository, &logRepository)
-	authenService := service.NewAuthenRepositoryImpl(&authenRepository)
+	authenService := service.NewAuthenServiceImpl(&authenRepository)
+	promotionService := service.NewPromotionServiceImpl(&promotionRepository, &logRepository)
 
 	//setup controller
 	dealerController := controller.NewDealerController(&dealerService, config)
@@ -89,6 +91,7 @@ func main() {
 	configController := controller.NewConfigController(&configService, config)
 	userController := controller.NewUserController(&userService, config)
 	authenController := controller.NewAuthenController(&authenService, config)
+	promotionController := controller.NewPromotionController(&promotionService, config)
 
 	//setup routing
 	app.Get("/", controller.Hello)
@@ -102,6 +105,7 @@ func main() {
 	configController.Route(app)
 	userController.Route(app)
 	authenController.Route(app)
+	promotionController.Route(app)
 	app.All("*", controller.NotFound)
 
 	// bytes := make([]byte, 32) //generate a random 32 byte key for AES-256

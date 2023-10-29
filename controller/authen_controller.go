@@ -32,11 +32,14 @@ func (controller AuthenController) Login(c *fiber.Ctx) error {
 	if err := c.BodyParser(input); err != nil {
 		return c.SendStatus(fiber.StatusUnauthorized)
 	}
-	log.Debug().Msg(input.UserName)
-	log.Debug().Msg(input.UserPass)
+	log.Debug().
+		Str("userName", input.UserName).
+		Str("userPass", input.UserPass).
+		Send()
 	result := controller.AuthenService.Login(c.Context(), input.UserName, input.UserPass)
-	log.Debug().Msg(result.UserType)
-	log.Debug().Msg("---")
+	log.Debug().
+		Str("userType", result.UserType).
+		Send()
 	roles := []string{
 		"ROLE_USER",
 	}

@@ -1,10 +1,11 @@
 package constant
 
 const (
-	ModuleDealer   = "dealer"
-	ModuleProduct  = "product"
-	ModuleWarranty = "warranty"
-	ModuleConfig   = "config"
+	ModuleDealer    = "dealer"
+	ModuleProduct   = "product"
+	ModuleWarranty  = "warranty"
+	ModuleConfig    = "config"
+	ModulePromotion = "promotion"
 )
 
 const (
