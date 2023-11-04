@@ -113,7 +113,7 @@ func (service *warrantyServiceImpl) Create(ctx context.Context, warrantyInput mo
 			promotionExpire := ""
 			promotionDetail := ""
 			promotionDay := 0
-			if strings.EqualFold(product.ProductType, "tire") && (product.ProductAmount >= 4) {
+			if product.ProductAmount >= 4 {
 				warrantyCreatedDate := time.Now().In(loc)
 				promotion := entity.Promotion{
 					PromotionStatus: "active",
