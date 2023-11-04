@@ -90,7 +90,7 @@ func (service *promotionServiceImpl) Update(ctx context.Context, promotionInput 
 	for _, rs := range promotions {
 		service.LogRepository.Insert(ctx, entity.Log{
 			CreatedBy: updatedBy,
-			Module:    constant.ModuleWarranty,
+			Module:    constant.ModulePromotion,
 			Detail:    "แก้ไข : แคมเปญ รหัส  " + rs.ID.String() + " " + rs.PromotionDetail,
 		})
 
@@ -106,6 +106,19 @@ func (service *promotionServiceImpl) Update(ctx context.Context, promotionInput 
 		})
 	}
 	return responses
+}
+
+// Delete implements service.PromotionService
+func (service *promotionServiceImpl) Delete(ctx context.Context, id string, deletedBy string) bool {
+	promotion := service.PromotionRepository.GetById(ctx, id)
+
+	service.PromotionRepository.Delete(ctx, promotion)
+	service.LogRepository.Insert(ctx, entity.Log{
+		CreatedBy: deletedBy,
+		Module:    constant.ModulePromotion,
+		Detail:    "ลบ : แคมเปญ รหัส  " + id,
+	})
+	return true
 }
 
 // List implements service.PromotionService

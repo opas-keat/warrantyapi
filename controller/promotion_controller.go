@@ -9,6 +9,7 @@ import (
 
 	"warrantyapi/configuration"
 	"warrantyapi/constant"
+	"warrantyapi/middleware"
 	"warrantyapi/model"
 	"warrantyapi/service"
 )
@@ -25,10 +26,11 @@ func NewPromotionController(PromotionService *service.PromotionService, config c
 func (controller PromotionController) Route(app *fiber.App) {
 	apiV1 := app.Group(controller.Config.Get("API_CONTEXT_PATH") + "/v1")
 	api := apiV1.Group("/promotion")
-	api.Post("/", controller.create)
-	api.Put("/", controller.update)
-	api.Get("/", controller.list)
-	api.Get("/active", controller.listActive)
+	api.Post("/", middleware.AuthenticateJWT("ROLE_ADMIN"), controller.create)
+	api.Put("/", middleware.AuthenticateJWT("ROLE_ADMIN"), controller.update)
+	api.Delete("/:id", middleware.AuthenticateJWT("ROLE_ADMIN"), controller.delete)
+	api.Get("/", middleware.AuthenticateJWT("ROLE_USER"),controller.list)
+	api.Get("/active", middleware.AuthenticateJWT("ROLE_USER"), controller.listActive)
 }
 
 func (controller PromotionController) create(c *fiber.Ctx) error {
@@ -42,8 +44,8 @@ func (controller PromotionController) create(c *fiber.Ctx) error {
 	for _, promotion := range promotionsInput.Promotions {
 		println(promotion.PromotionType)
 	}
-	// userName := middleware.GetUserNameFromToken(c)
-	userName := "admin"
+	userName := middleware.GetUserNameFromToken(c)
+	// userName := "admin"
 	result := controller.PromotionService.Create(c.Context(), promotionsInput.Promotions, userName)
 	return c.Status(fiber.StatusOK).JSON(model.GeneralResponse{
 		Code:    constant.STATUS_CODE_OK,
@@ -63,12 +65,26 @@ func (controller PromotionController) update(c *fiber.Ctx) error {
 	for _, promotion := range promotionsInput.Promotions {
 		println(promotion.ID)
 	}
-	// userName := middleware.GetUserNameFromToken(c)
-	userName := "admin"
+	userName := middleware.GetUserNameFromToken(c)
+	// userName := "admin"
 	log.Debug().
 		Any("promotions", promotionsInput.Promotions).
 		Send()
 	result := controller.PromotionService.Update(c.Context(), promotionsInput.Promotions, userName)
+	return c.Status(fiber.StatusOK).JSON(model.GeneralResponse{
+		Code:    "000",
+		Message: "Success",
+		Data:    result,
+	})
+}
+
+func (controller PromotionController) delete(c *fiber.Ctx) error {
+	id := c.Params("id")
+	log.Debug().
+		Str("id", id).
+		Send()
+	userName := middleware.GetUserNameFromToken(c)
+	result := controller.PromotionService.Delete(c.Context(), id, userName)
 	return c.Status(fiber.StatusOK).JSON(model.GeneralResponse{
 		Code:    "000",
 		Message: "Success",
