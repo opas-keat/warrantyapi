@@ -80,13 +80,13 @@ func (repository *warrantyRepositoryImpl) ListCustomer(ctx context.Context, offs
 	// Where("ect_name LIKE ?", "%"+name+"%").
 	tx := repository.DB.WithContext(ctx).Debug()
 	if search.CustomerEmail != "" {
-		tx = tx.Where("customer_email = ?", "%"+search.CustomerEmail+"%")
+		tx = tx.Where("customer_email like ?", "%"+search.CustomerEmail+"%")
 	}
 	if search.CustomerLicensePlate != "" {
-		tx = tx.Where("customer_license_plate = ?", "%"+search.CustomerLicensePlate+"%")
+		tx = tx.Where("customer_license_plate like ?", "%"+search.CustomerLicensePlate+"%")
 	}
-	if search.CustomerEmail != "" {
-		tx = tx.Where("customer_phone = ?", "%"+search.CustomerPhone+"%")
+	if search.CustomerPhone != "" {
+		tx = tx.Where("customer_phone like ?", "%"+search.CustomerPhone+"%")
 	}
 	var result []entity.Warranty
 	tx.Offset(offset).
