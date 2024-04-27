@@ -3,6 +3,10 @@
 run:
 	go run main.go
 
+.PHONY: test
+test:
+	go test ./... -v
+
 .PHONY: build
 build:	
 	if [ -z "$(FILE_NAME)" ]; then \

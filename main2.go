@@ -71,4 +71,5 @@ func main2() {
 	d := info{"jack"}
 
 	d.sendMail()
+	
 }
