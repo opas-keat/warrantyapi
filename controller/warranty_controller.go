@@ -28,6 +28,7 @@ func (controller WarrantyController) Route(app *fiber.App) {
 	api.Put("/", controller.update)
 	api.Delete("/:id", controller.delete)
 	api.Get("/customer", controller.listCustomer)
+	api.Get("/excels", controller.listExcels)
 	api.Get("/", controller.list)
 	api.Get("/:id", controller.findById)
 	api.Static("/uploads", "./uploads")
@@ -168,4 +169,27 @@ func (controller WarrantyController) findById(c *fiber.Ctx) error {
 		Message: "Success",
 		Data:    result,
 	})
+}
+
+func (controller WarrantyController) listExcels(c *fiber.Ctx) error {
+	p := new(model.ListReq)
+	if err := c.QueryParser(p); err != nil {
+		return err
+	}
+	// customerPhone := c.Query("customer_phone")
+	CustomerLicensePlate := c.Query("customer_license_plate")
+	// CustomerEmail := c.Query("customer_email")
+	println(p.Offset)
+	println(p.Limit)
+	println(p.Order)
+	if p.Limit > 5 {
+		p.Limit = 5
+	}
+	warrantyInput := model.WarrantyRequest{
+		// CustomerPhone:        customerPhone,
+		CustomerLicensePlate: CustomerLicensePlate,
+		// CustomerEmail:        CustomerEmail,
+	}
+	result := controller.WarrantyService.ListExcels(c.Context(), p.Offset, p.Limit, p.Order, warrantyInput)
+	return c.SendFile(result)
 }

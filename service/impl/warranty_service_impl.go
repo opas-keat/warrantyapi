@@ -370,3 +370,50 @@ func (service *warrantyServiceImpl) List(ctx context.Context, offset int, limit 
 	}
 	return warrantyResponse
 }
+
+// List implements service.WarrantyService
+func (service *warrantyServiceImpl) ListExcels(ctx context.Context, offset int, limit int, order string, warrantyInput model.WarrantyRequest) string {
+	searchInput := entity.Warranty{
+		CustomerPhone:        warrantyInput.CustomerPhone,
+		CustomerLicensePlate: warrantyInput.CustomerLicensePlate,
+		CustomerEmail:        warrantyInput.CustomerEmail,
+	}
+	warrantys := service.WarrantyRepository.ListExcels(ctx, offset, limit, order, searchInput)
+	if len(warrantys) == 0 {
+		return ""
+	}
+
+	var data = [][]interface{}{
+		{"ชื่อ-สกุล", "เบอร์โทร", "อีเมลล์", "ทะเบียนรถ", "เลขที่ใบรับประกัน", "ร้านค้าที่ซื้อ", "วันที่ซื้อ", "ประเภทสินค้า", "รายการสินค้า", "จำนวน", "วันที่หมดรับประกันโครงสร้าง", "วันที่หมดรับประกันสี", "วันที่หมดรับประกันคุณภาพตามกระบวนการผลิต", "หมดรับประกันระยะ", "แคมเปญ"},
+	}
+	// var warrantyResponse []model.ExcelsResponse
+	for _, warranty := range warrantys {
+		if warranty.CustomerName != "" {
+			data = append(data, []interface{}{
+				warranty.CustomerName,
+				warranty.CustomerPhone,
+				warranty.CustomerEmail,
+				warranty.CustomerLicensePlate,
+				warranty.WarrantyNo,
+				warranty.DealerName,
+				warranty.WarrantyDateTime,
+				warranty.ProductType,
+				warranty.ProductBrand,
+				warranty.ProductAmount,
+				warranty.ProductStructureExpire,
+				warranty.ProductColorExpire,
+				warranty.ProductTireExpire,
+				warranty.ProductMileExpire,
+				warranty.Campagne,
+			})
+		}
+	}
+	var (
+		pathFile = common.CreatePathFile("excels", time.Now().Format("20060102")) + time.Now().Format("20060102150405") + ".xlsx"
+		sheet    = "Sheet1"
+	)
+	// fmt.Println(pathFile)
+	common.CreateExcel(pathFile, sheet, data)
+	// fmt.Println(data)
+	return pathFile
+}

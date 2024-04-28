@@ -12,4 +12,5 @@ type WarrantyService interface {
 	Delete(ctx context.Context, id string, deletedBy string) bool
 	ListCustomer(ctx context.Context, offset int, limit int, order string, warrantySearch model.WarrantyRequest) []model.WarrantyResponse
 	List(ctx context.Context, offset int, limit int, order string, warrantySearch model.WarrantyRequest) []model.WarrantyResponse
+	ListExcels(ctx context.Context, offset int, limit int, order string, warrantySearch model.WarrantyRequest) string
 }

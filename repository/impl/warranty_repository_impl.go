@@ -95,3 +95,41 @@ func (repository *warrantyRepositoryImpl) ListCustomer(ctx context.Context, offs
 		Find(&result)
 	return result
 }
+
+// Excels implements repository.WarrantyRepository
+func (repository *warrantyRepositoryImpl) ListExcels(ctx context.Context, offset int, limit int, order string, search entity.Warranty) []entity.Excels {
+	// var result []entity.Warranty
+	var (
+		result            []entity.Excels
+		warrantyTableNAme = "wt_warranty"
+		productTableName  = "wt_product"
+	)
+	// repository.DB.WithContext(ctx).Debug().
+	// 	Offset(offset).
+	// 	Limit(limit).
+	// 	Order(order).
+	// 	Where(search).
+	// 	Find(&result)
+	repository.DB.WithContext(ctx).Debug().
+		Model(&entity.Warranty{}).
+		Select(
+			warrantyTableNAme + ".customer_name, " +
+				warrantyTableNAme + ".customer_phone, " +
+				warrantyTableNAme + ".customer_license_plate, " +
+				warrantyTableNAme + ".customer_email, " +
+				warrantyTableNAme + ".warranty_no, " +
+				warrantyTableNAme + ".dealer_name, " +
+				warrantyTableNAme + ".warranty_date, " +
+				productTableName + ".product_type, " +
+				productTableName + ".product_brand, " +
+				productTableName + ".product_amount, " +
+				productTableName + ".product_structure_expire, " +
+				productTableName + ".product_color_expire, " +
+				productTableName + ".product_tire_expire, " +
+				productTableName + ".product_mile_expire, " +
+				productTableName + ".campagne",
+		).
+		Joins("left join wt_product on wt_warranty.warranty_no = wt_product.warranty_no").
+		Scan(&result)
+	return result
+}
