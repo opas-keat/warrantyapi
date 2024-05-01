@@ -28,7 +28,7 @@ func (controller WarrantyController) Route(app *fiber.App) {
 	api.Put("/", controller.update)
 	api.Delete("/:id", controller.delete)
 	api.Get("/customer", controller.listCustomer)
-	api.Get("/excels", controller.listExcels)
+	api.Get("/excels", middleware.AuthenticateJWT("ROLE_ADMIN"), controller.listExcels)
 	api.Get("/", controller.list)
 	api.Get("/:id", controller.findById)
 	api.Static("/uploads", "./uploads")
