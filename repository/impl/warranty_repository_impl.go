@@ -2,6 +2,7 @@ package impl
 
 import (
 	"context"
+	"fmt"
 	"warrantyapi/entity"
 	"warrantyapi/exception"
 	"warrantyapi/repository"
@@ -100,36 +101,60 @@ func (repository *warrantyRepositoryImpl) ListCustomer(ctx context.Context, offs
 func (repository *warrantyRepositoryImpl) ListExcels(ctx context.Context, offset int, limit int, order string, search entity.Warranty) []entity.Excels {
 	// var result []entity.Warranty
 	var (
-		result            []entity.Excels
-		warrantyTableNAme = "wt_warranty"
-		productTableName  = "wt_product"
+		result []entity.Excels
+		// warrantyTableName = "wt_warranty"
+		// productTableName  = "wt_product"
 	)
-	// repository.DB.WithContext(ctx).Debug().
-	// 	Offset(offset).
-	// 	Limit(limit).
-	// 	Order(order).
-	// 	Where(search).
+	// repository.DB.WithContext(ctx).Debug().Table("wt_warranty").
+	// 	Joins("left join wt_product on wt_warranty.warranty_no = wt_product.warranty_no").
+	// 	//  Select("changelog.objectType, changelog.object_type, changelog.object_id, changelog.parent_type, changelog.parent_id, changelog.action, changelog.field, changelog.old_value, changelog.new_value, cc.comment, changelog.created_on, changelog.created_by").
+	// 	Select(
+	// 		warrantyTableName + ".customer_name, " +
+	// 			warrantyTableName + ".warranty_date," +
+	// 			warrantyTableName + ".customer_phone, " +
+	// 			warrantyTableName + ".customer_license_plate, " +
+	// 			warrantyTableName + ".customer_email, " +
+	// 			warrantyTableName + ".warranty_no, " +
+	// 			warrantyTableName + ".dealer_name, " +
+	// 			productTableName + ".product_type, " +
+	// 			productTableName + ".product_brand, " +
+	// 			productTableName + ".product_amount, " +
+	// 			productTableName + ".product_structure_expire, " +
+	// 			productTableName + ".product_color_expire, " +
+	// 			productTableName + ".product_tire_expire, " +
+	// 			productTableName + ".product_mile_expire, " +
+	// 			productTableName + ".campagne",
+	// 	).
 	// 	Find(&result)
 	repository.DB.WithContext(ctx).Debug().
-		Model(&entity.Warranty{}).
-		Select(
-			warrantyTableNAme + ".customer_name, " +
-				warrantyTableNAme + ".customer_phone, " +
-				warrantyTableNAme + ".customer_license_plate, " +
-				warrantyTableNAme + ".customer_email, " +
-				warrantyTableNAme + ".warranty_no, " +
-				warrantyTableNAme + ".dealer_name, " +
-				warrantyTableNAme + ".warranty_date, " +
-				productTableName + ".product_type, " +
-				productTableName + ".product_brand, " +
-				productTableName + ".product_amount, " +
-				productTableName + ".product_structure_expire, " +
-				productTableName + ".product_color_expire, " +
-				productTableName + ".product_tire_expire, " +
-				productTableName + ".product_mile_expire, " +
-				productTableName + ".campagne",
-		).
-		Joins("left join wt_product on wt_warranty.warranty_no = wt_product.warranty_no").
-		Scan(&result)
+		// Offset(offset).
+		// Limit(limit).
+		// Order(order).
+		// Where(search).
+		Find(&result)
+	// repository.DB.WithContext(ctx).Debug().
+	// 	Model(&entity.Warranty{}).
+	// 	Select(
+	// 		warrantyTableName + ".customer_name, " +
+	// 			warrantyTableName + ".warranty_date," +
+	// 			warrantyTableName + ".customer_phone, " +
+	// 			warrantyTableName + ".customer_license_plate, " +
+	// 			warrantyTableName + ".customer_email, " +
+	// 			warrantyTableName + ".warranty_no, " +
+	// 			warrantyTableName + ".dealer_name, " +
+	// 			productTableName + ".product_type, " +
+	// 			productTableName + ".product_brand, " +
+	// 			productTableName + ".product_amount, " +
+	// 			productTableName + ".product_structure_expire, " +
+	// 			productTableName + ".product_color_expire, " +
+	// 			productTableName + ".product_tire_expire, " +
+	// 			productTableName + ".product_mile_expire, " +
+	// 			productTableName + ".campagne",
+	// 	).
+	// 	Joins("left join wt_product on wt_warranty.warranty_no = wt_product.warranty_no").
+	// 	Find(&result)
+	// Scan(&result)
+
+	fmt.Println(result)
 	return result
 }

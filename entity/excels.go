@@ -7,7 +7,7 @@ type Excels struct {
 	CustomerEmail          string `json:"customer_email"`
 	WarrantyNo             string `json:"warranty_no"`
 	DealerName             string `json:"dealer_name"`
-	WarrantyDateTime       string `json:"warranty_date"`
+	WarrantyDate           string `json:"warranty_date"`
 	ProductType            string `json:"product_type"`
 	ProductBrand           string `json:"product_brand"`
 	ProductAmount          int    `json:"product_amount"`
@@ -16,4 +16,8 @@ type Excels struct {
 	ProductTireExpire      string `json:"product_tire_expire"`
 	ProductMileExpire      string `json:"product_mile_expire"`
 	Campagne               string `json:"campagne"`
+}
+
+func (Excels) TableName() string {
+	return "v_warranty_product"
 }
