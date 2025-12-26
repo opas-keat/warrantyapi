@@ -56,7 +56,7 @@ func (controller NotificationController) email(c *fiber.Ctx) error {
 
 	fmt.Println("Try sending mail...")
 	m := gomail.NewMessage()
-	m.SetHeader("From", "noreply@ppsuperwheels.com")
+	m.SetHeader("From", "warranty@ppsuperwheels.com")
 	m.SetHeader("To", warranty.CustomerEmail)
 	// m.SetAddressHeader("Cc", "<RECIPIENT CC>", "<RECIPIENT CC NAME>")
 	m.SetHeader("Subject", "ลงทะเบียนรับประกัน")
@@ -65,7 +65,7 @@ func (controller NotificationController) email(c *fiber.Ctx) error {
 	m.Embed("./templates/lineid.png")
 	// m.Attach("template.html")// attach whatever you want
 
-	d := gomail.NewDialer("mail.ppsuperwheels.com", 25, "noreply@ppsuperwheels.com", "+PPsuper@1234")
+	d := gomail.NewDialer("mail.ppsuperwheels.com", 25, "warranty@ppsuperwheels.com", "+PPsuper@1234")
 
 	// Send the email to Bob, Cora and Dan.
 	if err := d.DialAndSend(m); err != nil {
