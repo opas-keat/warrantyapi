@@ -26,4 +26,4 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: opas/ppswwarranty-api:latest,opas/ppswwarranty-api:1.0.1
+          tags: opas/ppswwarranty-api:latest,opas/ppswwarranty-api:1.0.3

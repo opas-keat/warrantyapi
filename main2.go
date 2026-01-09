@@ -37,17 +37,22 @@ func (i info) sendMail() {
 
 	fmt.Println("Try sending mail...")
 	m := gomail.NewMessage()
-	m.SetHeader("From", "noreply@ppsuperwheels.com")
+	m.SetHeader("From", "warranty@ppsuperwheels.com")
 	m.SetHeader("To", "opas.miracle@gmail.com")
 	// m.SetAddressHeader("Cc", "<RECIPIENT CC>", "<RECIPIENT CC NAME>")
 	m.SetHeader("Subject", "ลงทะเบียนรับประกัน")
 	m.SetBody("text/html", result)
+	m.Embed("./templates/logo.png")
+	m.Embed("./templates/lineid.png")
 	// m.Attach("template.html")// attach whatever you want
 
-	d := gomail.NewDialer("mail.ppsuperwheels.com", 25, "noreply@ppsuperwheels.com", "+PPsuper@1234")
+	d := gomail.NewDialer("mail.ppsuperwheels.com", 25, "warranty@ppsuperwheels.com", "+PPsuper@1234")
 
+	//show errors if any
+	// d.SSL = false
 	// Send the email to Bob, Cora and Dan.
 	if err := d.DialAndSend(m); err != nil {
+		fmt.Println("Failed sending mail")
 		panic(err)
 	}
 
@@ -71,5 +76,5 @@ func main2() {
 	d := info{"jack"}
 
 	d.sendMail()
-	
+
 }

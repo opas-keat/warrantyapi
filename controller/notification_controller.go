@@ -54,7 +54,7 @@ func (controller NotificationController) email(c *fiber.Ctx) error {
 
 	result := tpl.String()
 
-	fmt.Println("Try sending mail...")
+	fmt.Println("Try sending mail...", warranty.CustomerEmail)
 	m := gomail.NewMessage()
 	m.SetHeader("From", "warranty@ppsuperwheels.com")
 	m.SetHeader("To", warranty.CustomerEmail)
@@ -67,8 +67,9 @@ func (controller NotificationController) email(c *fiber.Ctx) error {
 
 	d := gomail.NewDialer("mail.ppsuperwheels.com", 25, "warranty@ppsuperwheels.com", "+PPsuper@1234")
 
-	// Send the email to Bob, Cora and Dan.
+	// Send the email
 	if err := d.DialAndSend(m); err != nil {
+		print("Error occurred when send email : " + err.Error())
 		panic(err)
 	}
 
