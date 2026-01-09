@@ -1,5 +1,5 @@
 # ./Dockerfile
-FROM golang:1.22.1-alpine AS builder
+FROM golang:1.24-alpine AS builder
 # Set necessary environmet variables needed for our image
 # ENV GO111MODULE=on \
 #     CGO_ENABLED=0 \
