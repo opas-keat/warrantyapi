@@ -72,12 +72,13 @@ func (controller NotificationController) email(c *fiber.Ctx) error {
 
 	// Send the email
 	if err := d.DialAndSend(m); err != nil {
-		print("Error occurred when send email : " + err.Error())
+		fmt.Println("Error:", err)
 		panic(err)
 	}
 
 	if err != nil {
-		print("Error occurred when send email : " + err.Error())
+		fmt.Println("Error:", err)
+		// print("Error occurred when send email : " + err.Error())
 	}
 	return c.Status(fiber.StatusOK).JSON(model.GeneralResponse{
 		Code:    "000",
