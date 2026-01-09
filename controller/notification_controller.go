@@ -37,6 +37,7 @@ func (controller NotificationController) email(c *fiber.Ctx) error {
 	if err := c.BodyParser(warrantysInput); err != nil {
 		print("An error occurred when parsing the warrantys: " + err.Error())
 	}
+	fmt.Println("warrantysInput.Id : ", warrantysInput.Id)
 	warranty := controller.WarrantyService.FindById(c.Context(), warrantysInput.Id)
 
 	t := template.New("template.html")
@@ -54,10 +55,12 @@ func (controller NotificationController) email(c *fiber.Ctx) error {
 
 	result := tpl.String()
 
+	fmt.Println("warranty : ", warranty)
 	fmt.Println("Try sending mail...", warranty.CustomerEmail)
 	m := gomail.NewMessage()
 	m.SetHeader("From", "warranty@ppsuperwheels.com")
 	m.SetHeader("To", warranty.CustomerEmail)
+	// m.SetHeader("To", "opas.miracle@gmail.com")
 	// m.SetAddressHeader("Cc", "<RECIPIENT CC>", "<RECIPIENT CC NAME>")
 	m.SetHeader("Subject", "ลงทะเบียนรับประกัน")
 	m.SetBody("text/html", result)
@@ -65,7 +68,7 @@ func (controller NotificationController) email(c *fiber.Ctx) error {
 	m.Embed("./templates/lineid.png")
 	// m.Attach("template.html")// attach whatever you want
 
-	d := gomail.NewDialer("mail.ppsuperwheels.com", 25, "warranty@ppsuperwheels.com", "+PPsuper@1234")
+	d := gomail.NewDialer("mail.ppsuperwheels.com", 587, "warranty@ppsuperwheels.com", "+PPsuper@1234")
 
 	// Send the email
 	if err := d.DialAndSend(m); err != nil {
