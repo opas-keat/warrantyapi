@@ -2,6 +2,7 @@ package controller
 
 import (
 	"bytes"
+	"crypto/tls"
 	"fmt"
 	"html/template"
 	"log"
@@ -69,6 +70,7 @@ func (controller NotificationController) email(c *fiber.Ctx) error {
 	// m.Attach("template.html")// attach whatever you want
 
 	d := gomail.NewDialer("mail.ppsuperwheels.com", 587, "warranty@ppsuperwheels.com", "+PPsuper@1234")
+	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
 
 	// Send the email
 	if err := d.DialAndSend(m); err != nil {
@@ -80,6 +82,7 @@ func (controller NotificationController) email(c *fiber.Ctx) error {
 		fmt.Println("Error:", err)
 		// print("Error occurred when send email : " + err.Error())
 	}
+
 	return c.Status(fiber.StatusOK).JSON(model.GeneralResponse{
 		Code:    "000",
 		Message: "Success",
